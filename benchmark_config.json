@@ -1,0 +1,219 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AMD Multi-GPU LLM Benchmark Configuration",
+  "description": "Programmatic matrix configurations for longitudinal local LLM performance tracking on 2x16GB AMD setup.",
+  "metadata": {
+    "target_platform": "AMD Radeon / Instinct (2 x 16GB)",
+    "pcie_link_config": "2 x Gen 4.0 x8",
+    "rocm_version_target": ">=6.4.0"
+  },
+  "global_env_vars": {
+    "ROCM_PATH": "/opt/rocm",
+    "HIP_VISIBLE_DEVICES": "0,1",
+    "FLASH_ATTENTION_TRITON_AMD_ENABLE": "1",
+    "AMD_SMS": "1"
+  },
+  "test_cases": [
+    {
+      "test_id": "CTRL-01-LLAMA3-VLLM",
+      "model": {
+        "repo": "meta-llama/Meta-Llama-3-8B-Instruct",
+        "quantized_repo": "amd/Meta-Llama-3-8B-Instruct-FP8-Quark",
+        "family": "Llama 3",
+        "type": "dense"
+      },
+      "engine": {
+        "name": "vllm",
+        "version": "nightly",
+        "backend": "rocm",
+        "cli_flags": [
+          "--quantization fp8",
+          "--tensor-parallel-size 2",
+          "--max-model-len 8192",
+          "--gpu-memory-utilization 0.90",
+          "--enable-chunked-prefill",
+          "--trust-remote-code"
+        ]
+      },
+      "workload": {
+        "scenario": "throughput_serving",
+        "batch_size": 32,
+        "input_len": 1024,
+        "output_len": 512
+      }
+    },
+    {
+      "test_id": "CTRL-02-LLAMA3-CPP",
+      "model": {
+        "repo": "meta-llama/Meta-Llama-3-8B-Instruct",
+        "quantized_repo": "lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF",
+        "filename": "Meta-Llama-3-8B-Instruct-Q4_K_M.gguf",
+        "family": "Llama 3",
+        "type": "dense"
+      },
+      "engine": {
+        "name": "llama.cpp",
+        "version": "master",
+        "backend": "rocm",
+        "cli_flags": [
+          "--n-gpu-layers 33",
+          "--split-mode layer",
+          "--ctx-size 8192",
+          "--flash-attn",
+          "--threads 16",
+          "--cache-type-k q8_0",
+          "--cache-type-v q8_0"
+        ]
+      },
+      "workload": {
+        "scenario": "single_user_chat",
+        "batch_size": 1,
+        "input_len": 2048,
+        "output_len": 512
+      }
+    },
+    {
+      "test_id": "EDGE-01-GEMMA4-EXL2",
+      "model": {
+        "repo": "google/gemma-4-26b-a4b-it",
+        "quantized_repo": "turboderp/gemma-4-26b-a4b-it-exl2",
+        "family": "Gemma 4",
+        "type": "moe",
+        "revision": "4.0bpw"
+      },
+      "engine": {
+        "name": "exllamav2",
+        "version": "source-built",
+        "backend": "rocm-hip",
+        "cli_flags": [
+          "--gpu_split 6.3,6.3",
+          "--length 8192",
+          "--bits 4.0",
+          "--cache_mode FP8"
+        ]
+      },
+      "workload": {
+        "scenario": "agentic_chat_latency",
+        "batch_size": 1,
+        "input_len": 4096,
+        "output_len": 256
+      }
+    },
+    {
+      "test_id": "EDGE-02-GEMMA4-VLLM",
+      "model": {
+        "repo": "google/gemma-4-26b-a4b-it",
+        "quantized_repo": "amd/gemma-4-26b-a4b-it-ptpc-fp8",
+        "family": "Gemma 4",
+        "type": "moe"
+      },
+      "engine": {
+        "name": "vllm",
+        "version": "nightly",
+        "backend": "rocm",
+        "cli_flags": [
+          "--quantization ptpc_fp8",
+          "--tensor-parallel-size 2",
+          "--max-model-len 16384",
+          "--gpu-memory-utilization 0.95",
+          "--trust-remote-code"
+        ],
+        "env_vars": {
+          "VLLM_ENGINE_ITERATION_TIMEOUT_S": "120"
+        }
+      },
+      "workload": {
+        "scenario": "throughput_serving",
+        "batch_size": 16,
+        "input_len": 4096,
+        "output_len": 512
+      }
+    },
+    {
+      "test_id": "EDGE-03-QWEN3-CPP",
+      "model": {
+        "repo": "Qwen/Qwen3-30B-A3B-Instruct",
+        "quantized_repo": "Qwen/Qwen3-30B-A3B-Instruct-GGUF",
+        "filename": "Qwen3.6-35B-A3B-MTP-UD-Q4_K_XL.gguf",
+        "draft_model": {
+          "repo": "Qwen/Qwen3-0.6B-Instruct-GGUF",
+          "filename": "Qwen3-0.6B-Instruct-Q8_0.gguf"
+        },
+        "family": "Qwen 3",
+        "type": "moe"
+      },
+      "engine": {
+        "name": "llama.cpp",
+        "version": "master",
+        "backend": "vulkan",
+        "cli_flags": [
+          "--n-gpu-layers 48",
+          "--split-mode layer",
+          "--ctx-size 16384",
+          "--flash-attn",
+          "--draft-model Qwen3-0.6B-Instruct-Q8_0.gguf",
+          "--draft-n 5"
+        ]
+      },
+      "workload": {
+        "scenario": "reasoning_latency",
+        "batch_size": 1,
+        "input_len": 8192,
+        "output_len": 2048
+      }
+    },
+    {
+      "test_id": "EDGE-04-QWEN3-VLLM",
+      "model": {
+        "repo": "Qwen/Qwen3-14B-Instruct",
+        "quantized_repo": "amd/Qwen3-14B-Instruct-FP8-Quark",
+        "family": "Qwen 3",
+        "type": "dense"
+      },
+      "engine": {
+        "name": "vllm",
+        "version": "nightly",
+        "backend": "rocm",
+        "cli_flags": [
+          "--quantization fp8",
+          "--tensor-parallel-size 2",
+          "--max-model-len 32768",
+          "--enable-chunked-prefill",
+          "--trust-remote-code"
+        ]
+      },
+      "workload": {
+        "scenario": "agentic_workflows_long_context",
+        "batch_size": 8,
+        "input_len": 16384,
+        "output_len": 1024
+      }
+    },
+    {
+      "test_id": "EDGE-05-GEMMA4-SINGLE",
+      "model": {
+        "repo": "google/gemma-4-e4b-8b-it",
+        "family": "Gemma 4",
+        "type": "dense"
+      },
+      "engine": {
+        "name": "exllamav2",
+        "version": "source-built",
+        "backend": "rocm-hip",
+        "cli_flags": [
+          "--gpu_split 16.0,0.0",
+          "--length 4096"
+        ],
+        "env_vars": {
+          "HIP_VISIBLE_DEVICES": "0"
+        }
+      },
+      "workload": {
+        "scenario": "pcie_baseline_speed",
+        "batch_size": 1,
+        "input_len": 2048,
+        "output_len": 512
+      }
+    }
+  ]
+}

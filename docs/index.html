@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AMD Multi-GPU LLM Performance Dashboard (SIMULATION)</title>
+    <title>AMD Multi-GPU LLM Performance Dashboard</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -527,8 +527,8 @@
         <!-- Dashboard Header -->
         <header>
             <div class="header-title">
-                <h1>AMD GPU Performance Dashboard (SIMULATION)</h1>
-                <p>Longitudinal Performance Matrix <span class="sys-badge">Dual RX 7800 XT</span> <span class="sys-badge" style="background: rgba(239, 68, 68, 0.15); border-color: #ef4444; color: #fca5a5; margin-left: 8px;">SIMULATION</span></p>
+                <h1>AMD GPU Performance Dashboard - Crucible Matrix</h1>
+                <p>Longitudinal Performance Matrix <span class="sys-badge">Dual RX 7800 XT</span></p>
             </div>
             <div class="sys-meta" id="header-meta">
                 <div class="sys-meta-item">OS: <strong id="meta-os">Loading...</strong></div>
@@ -855,10 +855,22 @@
             latestRunResults = rawLatestResults.map(res => {
                 const info = getModelStrengthInfo(res.model, metric);
                 const suffix = metric === 'lcb' ? '%' : '';
+                
+                const hasMetrics = res.status === 'SUCCESS' && res.metrics && typeof res.metrics.ttft_ms_median === 'number';
+                const vram0 = hasMetrics ? (res.metrics.vram_gpu0_used_mb / 1024).toFixed(1) : 0;
+                const vram1 = hasMetrics ? (res.metrics.vram_gpu1_used_mb / 1024).toFixed(1) : 0;
+                
                 return {
                     ...res,
                     strength: info.val,
-                    strength_display: `${info.val}${suffix} <span style="font-size: 0.8rem; color: var(--accent); font-weight: 600;">(${info.rank})</span>`
+                    strength_display: `${info.val}${suffix} <span style="font-size: 0.8rem; color: var(--accent); font-weight: 600;">(${info.rank})</span>`,
+                    ttft_med: hasMetrics ? res.metrics.ttft_ms_median : 0,
+                    ttft_p95: hasMetrics ? res.metrics.ttft_ms_p95 : 0,
+                    tpot_med: hasMetrics ? res.metrics.tpot_ms_median : 0,
+                    tpot_p95: hasMetrics ? res.metrics.tpot_ms_p95 : 0,
+                    tokens_sec: hasMetrics ? res.metrics.throughput_tps_median : 0,
+                    vram_gpu0_gb: hasMetrics ? `${vram0} GB` : 'N/A',
+                    vram_gpu1_gb: hasMetrics ? `${vram1} GB` : 'N/A'
                 };
             });
             
@@ -882,16 +894,45 @@
                 const hfUrl = getModelHfUrl(res.model);
                 const cleanEngine = res.engine.split(' (')[0];
                 
+                let ttft_display = '';
+                let tpot_display = '';
+                let tokens_sec_display = '';
+                let vram_display = '';
+                
+                if (res.status === 'SUCCESS') {
+                    ttft_display = `${res.ttft_med.toFixed(1)}ms / ${res.ttft_p95.toFixed(1)}ms`;
+                    tpot_display = `${res.tpot_med.toFixed(1)}ms / ${res.tpot_p95.toFixed(1)}ms`;
+                    tokens_sec_display = res.tokens_sec.toFixed(1);
+                    vram_display = `${res.vram_gpu0_gb} / ${res.vram_gpu1_gb}`;
+                } else {
+                    const statusBadgeColor = res.status === 'FAILED_COMPILATION' ? '#ef4444' : '#f59e0b';
+                    const statusText = res.status === 'FAILED_COMPILATION' ? 'Failed Compile' : 'Failed Run';
+                    const tooltipMsg = res.error_message ? res.error_message.replace(/"/g, '&quot;') : 'Unknown error';
+                    
+                    const badgeHtml = `
+                        <div class="tooltip-container" style="border-bottom: none;">
+                            <span class="sys-badge" style="background: rgba(239, 68, 68, 0.15); border-color: ${statusBadgeColor}; color: ${statusBadgeColor}; cursor: help;">${statusText}</span>
+                            <span class="tooltip-text" style="bottom: 125%; left: 50%; transform: translateX(-50%); width: 320px; font-family: var(--font-mono); font-size: 0.75rem; white-space: pre-wrap; word-break: break-all; max-height: 200px; overflow-y: auto;">
+                                <strong>Error Log:</strong><br>${tooltipMsg}
+                            </span>
+                        </div>
+                    `;
+                    ttft_display = badgeHtml;
+                    tpot_display = `<span style="color: var(--text-dim); font-style: italic;">N/A</span>`;
+                    tokens_sec_display = `<span style="color: var(--text-dim); font-style: italic;">N/A</span>`;
+                    vram_display = `<span style="color: var(--text-dim); font-style: italic;">N/A</span>`;
+                }
+                
                 tr.innerHTML = `
                     <td><a href="${hfUrl}" target="_blank" class="test-id-badge" style="text-decoration: none; color: var(--accent); border-bottom: 1px dashed rgba(0, 229, 255, 0.4); padding-bottom: 2px;" title="View on Hugging Face">${res.test_id}</a></td>
                     <td>${cleanEngine}</td>
                     <td class="strength-val" style="font-family: var(--font-mono); font-weight: 700;">${res.strength_display}</td>
                     <td class="model-col" style="${showModelCol ? '' : 'display: none;'}"><code><a href="${hfUrl}" target="_blank" style="color: var(--text-color); text-decoration: none; border-bottom: 1px dotted var(--text-dim);">${res.model}</a></code></td>
                     <td class="quant-val">${res.quantization}</td>
-                    <td>${res.ttft_med}ms / ${res.ttft_p95}ms</td>
-                    <td>${res.tpot_med}ms / ${res.tpot_p95}ms</td>
-                    <td class="tput-val">${res.tokens_sec}</td>
-                    <td class="vram-val">${res.vram_gpu0_gb} / ${res.vram_gpu1_gb}</td>
+                    <td>${ttft_display}</td>
+                    <td>${tpot_display}</td>
+                    <td class="tput-val">${tokens_sec_display}</td>
+                    <td class="vram-val">${vram_display}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -925,8 +966,22 @@
                 let valA = a[field];
                 let valB = b[field];
                 
+                const statusA = a.status === 'SUCCESS';
+                const statusB = b.status === 'SUCCESS';
+                
+                if (statusA && !statusB) return sortAscending ? -1 : 1;
+                if (!statusA && statusB) return sortAscending ? 1 : -1;
+                if (!statusA && !statusB) return 0;
+                
                 if (valA === undefined) return 1;
                 if (valB === undefined) return -1;
+                
+                let numA = parseFloat(valA);
+                let numB = parseFloat(valB);
+                
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    return sortAscending ? numA - numB : numB - numA;
+                }
                 
                 if (typeof valA === 'string') {
                     return sortAscending ? valA.localeCompare(valB) : valB.localeCompare(valA);
@@ -954,8 +1009,14 @@
                 const dateObj = new Date(meta.date);
                 document.getElementById('meta-date').textContent = dateObj.toLocaleDateString() + ' ' + dateObj.toLocaleTimeString();
 
-                // Populate commits
-                const commits = latestRun.commits;
+                // Extract commits dynamically from the run results
+                const commits = {
+                    vllm: latestRun.results.find(r => r.engine === 'vllm')?.git_commit || 'unknown',
+                    llama_cpp: latestRun.results.find(r => r.engine === 'llama.cpp')?.git_commit || 'unknown',
+                    mlc_llm: latestRun.results.find(r => r.engine === 'mlc-llm' || r.engine === 'MLC LLM')?.git_commit || 'unknown',
+                    exllamav2: latestRun.results.find(r => r.engine === 'exllamav2')?.git_commit || 'unknown'
+                };
+                
                 const commitGrid = document.getElementById('commits-grid');
                 
                 function formatCommitCard(name, repoUrl, commitVal) {
@@ -964,9 +1025,9 @@
                     const dateStr = (typeof commitVal === 'object' && commitVal.date) 
                         ? new Date(commitVal.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) 
                         : '';
-                    const link = hash 
+                    const link = (hash && hash !== 'unknown' && hash !== 'N/A') 
                         ? `<a href="${repoUrl}/commit/${hash}" target="_blank" style="color: var(--accent); text-decoration: none; font-weight: bold; font-family: var(--font-mono);">${hash}</a>` 
-                        : 'N/A';
+                        : `<span style="color: var(--text-dim); font-family: var(--font-mono);">${hash || 'N/A'}</span>`;
                     const dateHtml = dateStr 
                         ? `<div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 5px;">Released: ${dateStr}</div>` 
                         : '';
@@ -985,6 +1046,45 @@
                     ${formatCommitCard('MLC LLM', 'https://github.com/mlc-ai/mlc-llm', commits.mlc_llm)}
                     ${formatCommitCard('ExLlamaV2', 'https://github.com/turboderp/exllamav2', commits.exllamav2)}
                 `;
+
+                // Calculate dynamic stats metrics for the top cards
+                const successfulRuns = latestRun.results.filter(r => r.status === 'SUCCESS' && r.metrics);
+                
+                // 1. Best Low-Latency (Lowest TTFT)
+                if (successfulRuns.length > 0) {
+                    const bestLatencyRun = [...successfulRuns].sort((a, b) => a.metrics.ttft_ms_median - b.metrics.ttft_ms_median)[0];
+                    document.getElementById('top-latency-value').textContent = `${bestLatencyRun.metrics.ttft_ms_median.toFixed(1)} ms`;
+                    document.getElementById('top-latency-model').innerHTML = `${bestLatencyRun.model.split('/').pop()} (${bestLatencyRun.engine})`;
+                } else {
+                    document.getElementById('top-latency-value').textContent = 'N/A';
+                    document.getElementById('top-latency-model').textContent = 'No successful runs';
+                }
+                
+                // 2. Max Throughput (Highest Tokens/sec)
+                if (successfulRuns.length > 0) {
+                    const maxTputRun = [...successfulRuns].sort((a, b) => b.metrics.throughput_tps_median - a.metrics.throughput_tps_median)[0];
+                    document.getElementById('top-tput-value').textContent = `${maxTputRun.metrics.throughput_tps_median.toFixed(1)} t/s`;
+                    document.getElementById('top-tput-model').innerHTML = `${maxTputRun.model.split('/').pop()} (${maxTputRun.engine})`;
+                } else {
+                    document.getElementById('top-tput-value').textContent = 'N/A';
+                    document.getElementById('top-tput-model').textContent = 'No successful runs';
+                }
+                
+                // 3. System Success Rate / MoE
+                const moeRuns = successfulRuns.filter(r => r.model.toLowerCase().includes('moe') || r.model.toLowerCase().includes('mixtral') || r.model.toLowerCase().includes('a3b'));
+                if (moeRuns.length > 0) {
+                    const bestMoe = moeRuns.sort((a, b) => a.metrics.ttft_ms_median - b.metrics.ttft_ms_median)[0];
+                    document.getElementById('top-moe-value').textContent = `${bestMoe.metrics.tpot_ms_median.toFixed(1)} ms`;
+                    document.getElementById('top-moe-model').innerHTML = `${bestMoe.model.split('/').pop()} (TPOT, ${bestMoe.engine})`;
+                } else {
+                    const pct = ((successfulRuns.length / latestRun.results.length) * 100).toFixed(0);
+                    document.getElementById('top-moe-value').textContent = `${successfulRuns.length} / ${latestRun.results.length}`;
+                    document.getElementById('top-moe-model').innerHTML = `Execution Success Rate: <strong>${pct}%</strong>`;
+                    const cardTitle = document.querySelector('.stats-grid .stat-card:nth-child(3) .stat-label');
+                    if (cardTitle) {
+                        cardTitle.textContent = "Execution Success Rate";
+                    }
+                }
 
                 // Set results and render
                 rawLatestResults = latestRun.results;
