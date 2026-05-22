@@ -570,8 +570,10 @@ def generate_charts(current_results, history):
         margin=dict(l=50, r=50, t=80, b=140),
         legend=dict(
             orientation="h",
-            yanchor="top",
-            y=-0.22,
+            xref="container",
+            yref="container",
+            y=0.02,
+            yanchor="bottom",
             xanchor="center",
             x=0.5
         )
@@ -636,8 +638,10 @@ def generate_charts(current_results, history):
         margin=dict(l=50, r=50, t=80, b=130),
         legend=dict(
             orientation="h",
-            yanchor="top",
-            y=-0.28,
+            xref="container",
+            yref="container",
+            y=0.02,
+            yanchor="bottom",
             xanchor="center",
             x=0.5
         )
