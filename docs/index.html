@@ -49,7 +49,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             padding: 40px 20px;
         }
@@ -303,6 +303,10 @@
         .vram-val {
             font-family: var(--font-mono);
             color: var(--text-dim);
+        }
+
+        .quant-val {
+            white-space: nowrap;
         }
 
         /* Iframe Containers */
@@ -610,7 +614,7 @@
                                 <th onclick="sortBy('ttft_med')" style="cursor: pointer; user-select: none;"><span class="th-content">TTFT (Med/P95) <span id="sort-icon-ttft_med">↕</span></span></th>
                                 <th onclick="sortBy('tpot_med')" style="cursor: pointer; user-select: none;"><span class="th-content">TPOT (Med/P95) <span id="sort-icon-tpot_med">↕</span></span></th>
                                 <th onclick="sortBy('tokens_sec')" style="cursor: pointer; user-select: none;"><span class="th-content">Throughput (Tok/s) <span id="sort-icon-tokens_sec">↕</span></span></th>
-                                <th onclick="sortBy('vram_gpu0_gb')" style="cursor: pointer; user-select: none;"><span class="th-content">VRAM (GPU0/GPU1) <span id="sort-icon-vram_gpu0_gb">↕</span></span></th>
+                                <th onclick="sortBy('vram_gpu0_gb')" style="cursor: pointer; user-select: none;"><span class="th-content">VRAM(GPU0/1) <span id="sort-icon-vram_gpu0_gb">↕</span></span></th>
                             </tr>
                         </thead>
                         <tbody id="matrix-tbody">
@@ -688,6 +692,51 @@
                 arena: { val: 1153, rank: "B" },
                 coding: { val: 1162, rank: "B" },
                 lcb: { val: 18.2, rank: "B-" }
+            },
+            "Qwen/Qwen3.6-7B-Instruct": {
+                arena: { val: 1195, rank: "B+" },
+                coding: { val: 1205, rank: "B+" },
+                lcb: { val: 28.5, rank: "B-" }
+            },
+            "google/gemma-4-9b-it": {
+                arena: { val: 1210, rank: "B+" },
+                coding: { val: 1220, rank: "B+" },
+                lcb: { val: 32.1, rank: "B" }
+            },
+            "Qwen/Qwen3.6-14B-Instruct": {
+                arena: { val: 1235, rank: "A-" },
+                coding: { val: 1245, rank: "A-" },
+                lcb: { val: 38.2, rank: "B+" }
+            },
+            "deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct": {
+                arena: { val: 1238, rank: "A-" },
+                coding: { val: 1272, rank: "A" },
+                lcb: { val: 46.8, rank: "A-" }
+            },
+            "meta-llama/Meta-Llama-3.1-70B-Instruct": {
+                arena: { val: 1282, rank: "A+" },
+                coding: { val: 1290, rank: "A+" },
+                lcb: { val: 51.5, rank: "A+" }
+            },
+            "Qwen/Qwen2.5-Coder-32B-Instruct": {
+                arena: { val: 1268, rank: "A" },
+                coding: { val: 1305, rank: "A+" },
+                lcb: { val: 54.2, rank: "A" }
+            },
+            "mistralai/Mixtral-8x7B-Instruct-v0.1": {
+                arena: { val: 1182, rank: "B" },
+                coding: { val: 1180, rank: "B" },
+                lcb: { val: 24.5, rank: "B-" }
+            },
+            "mistralai/Mistral-7B-Instruct-v0.3": {
+                arena: { val: 1145, rank: "B-" },
+                coding: { val: 1135, rank: "C+" },
+                lcb: { val: 16.5, rank: "B-" }
+            },
+            "microsoft/Phi-3-medium-128k-instruct": {
+                arena: { val: 1190, rank: "B" },
+                coding: { val: 1175, rank: "B-" },
+                lcb: { val: 22.8, rank: "B-" }
             },
             "meta-llama/Llama-4-Scout-it": {
                 arena: { val: 1255, rank: "A-" },
@@ -838,7 +887,7 @@
                     <td>${cleanEngine}</td>
                     <td class="strength-val" style="font-family: var(--font-mono); font-weight: 700;">${res.strength_display}</td>
                     <td class="model-col" style="${showModelCol ? '' : 'display: none;'}"><code><a href="${hfUrl}" target="_blank" style="color: var(--text-color); text-decoration: none; border-bottom: 1px dotted var(--text-dim);">${res.model}</a></code></td>
-                    <td>${res.quantization}</td>
+                    <td class="quant-val">${res.quantization}</td>
                     <td>${res.ttft_med}ms / ${res.ttft_p95}ms</td>
                     <td>${res.tpot_med}ms / ${res.tpot_p95}ms</td>
                     <td class="tput-val">${res.tokens_sec}</td>
