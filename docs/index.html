@@ -531,7 +531,7 @@
                 <div class="sys-meta-item">ROCm Version: <strong id="meta-rocm">Loading...</strong></div>
                 <div class="sys-meta-item">PCIe Topology: <strong id="meta-pcie">Loading...</strong></div>
                 <div class="sys-meta-item">Last Executed: <strong id="meta-date">Loading...</strong></div>
-                <div class="sys-meta-item">Testing Plan: <strong><a href="#methodology" style="color: var(--accent); text-decoration: none; border-bottom: 1px dashed var(--accent); transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--accent)'">Methodology &rarr;</a></strong></div>
+                <div class="sys-meta-item">Testing Plan: <strong><a href="methodology.html" style="color: var(--accent); text-decoration: none; border-bottom: 1px dashed var(--accent); transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--accent)'">Methodology &rarr;</a></strong></div>
             </div>
         </header>
 
@@ -675,55 +675,7 @@
             </div>
         </div>
 
-        <!-- Methodology Section -->
-        <div class="content-section" id="methodology" style="margin-top: 40px; scroll-margin-top: 30px;">
-            <h2 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; background: linear-gradient(135deg, #fff 0%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Crucible Matrix Testing Methodology</h2>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 30px;">
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px;">
-                    <h3 style="color: var(--accent); margin-bottom: 12px; font-size: 1.15rem;">1. Test Architecture</h3>
-                    <p style="font-size: 0.9rem; color: var(--text-dim); line-height: 1.5;">
-                        Benchmarks are executed on a dual-GPU AMD system consisting of two 16GB RX 7800 XT cards (32GB total VRAM). Due to the lack of hardware interconnects like NVLink, cards communicate via a bifurcated PCIe Gen 4 x8/x8 topology on the motherboard, offering up to 16 GB/s bidirectional bandwidth per card.
-                    </p>
-                </div>
 
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px;">
-                    <h3 style="color: var(--accent); margin-bottom: 12px; font-size: 1.15rem;">2. Control vs. SOTA Edge</h3>
-                    <p style="font-size: 0.9rem; color: var(--text-dim); line-height: 1.5;">
-                        To accurately measure driver (ROCm/Vulkan) and engine compiler optimization over time, we maintain fixed <strong>control configurations</strong> (e.g., Llama 3 8B Instruct). The rest of the matrix features cutting-edge models (e.g., Gemma 4, Qwen 3.6, Llama 4) to test hardware memory limits.
-                    </p>
-                </div>
-
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px;">
-                    <h3 style="color: var(--accent); margin-bottom: 12px; font-size: 1.15rem;">3. Raw Speed Optimization</h3>
-                    <p style="font-size: 0.9rem; color: var(--text-dim); line-height: 1.5;">
-                        Our framework targets absolute maximum speed rather than system stability. This includes utilizing nightly builds compiled from source, aggressive quantization methods (FP8, AWQ, EXL2), speculative decoding pipelines, and custom ROCm kernels (AITER/PagedAttention).
-                    </p>
-                </div>
-            </div>
-
-            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; margin-bottom: 30px;">
-                <h3 style="color: #fff; margin-bottom: 15px; font-size: 1.2rem;">Execution & Measurement Protocol</h3>
-                <p style="font-size: 0.95rem; color: var(--text-dim); margin-bottom: 15px; line-height: 1.6;">
-                    The automated benchmark executor runs periodically in an isolated state to prevent resource contention. Each test configuration undergoes the following strict pipeline:
-                </p>
-                <ul style="color: var(--text-dim); font-size: 0.9rem; margin-left: 20px; line-height: 1.8;">
-                    <li><strong>Provisioning & Verification:</strong> Model weights are downloaded and verified. The runtime engines are either compiled from their latest nightly commits or fallback to the latest stable release. Exact commit hashes and driver metadata are recorded.</li>
-                    <li><strong>Warm-up:</strong> The engine processes 2 to 3 dummy requests to warm up the GPU memory allocation, load KV caches, and compile any runtime shaders.</li>
-                    <li><strong>Testing Loop:</strong> The target benchmark prompts are executed a minimum of 5 times ($N \ge 5$) with strict timeouts to prevent hard hangs. We record the median and $p95$ latencies for Time to First Token (TTFT) and Time Per Output Token (TPOT).</li>
-                    <li><strong>Teardown:</strong> Inference processes are aggressively terminated, and GPU VRAM is completely flushed before the next test begins.</li>
-                </ul>
-            </div>
-
-            <div style="background: rgba(194, 24, 91, 0.05); border: 1px solid rgba(194, 24, 91, 0.2); border-radius: 16px; padding: 25px;">
-                <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
-                    ⚠️ Blind Spots & Limitations
-                </h3>
-                <p style="font-size: 0.9rem; color: var(--text-color); line-height: 1.6;">
-                    While this testing matrix identifies peak potential throughput and minimum latency, it does not capture long-term system stability or qualitative degradation. Nightly compiler builds and experimental quantization formats are prone to runtime memory leaks, numerical precision drift, and ROCm kernel panics. Additionally, PCIe Gen 4 x8 bandwidth bottlenecks are heavily masked under low batch sizes but show extreme degradation during parallel expert sharding (e.g., MoE Tensor Parallelism).
-                </p>
-            </div>
-        </div>
 
         <footer>
             <p>AMD ROCm Performance Tracking Framework &bull; Maintained by <a href="https://github.com/nycdubliner">nycdubliner</a></p>
