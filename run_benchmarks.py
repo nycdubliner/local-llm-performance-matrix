@@ -618,7 +618,7 @@ def save_data_and_report(sys_meta, commits, current_results, history):
     exllamav2_date = commits['exllamav2']['date'] if isinstance(commits['exllamav2'], dict) else 'N/A'
     exllamav2_link = f"[{exllamav2_hash}](https://github.com/turboderp/exllamav2/commit/{exllamav2_hash})" if exllamav2_hash else "N/A"
 
-    md_content = f"""# Latest Benchmark Run Report
+    md_content = f"""# Latest Benchmark Run Report (SIMULATION)
 
 **Date:** {sys_meta['date']}  
 **OS Version:** {sys_meta['os_version']}  
