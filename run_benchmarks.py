@@ -162,7 +162,7 @@ def seed_history(sys_meta, commits):
             },
             "results": [
                 {
-                    "test_id": "CTRL-01",
+                    "test_id": "Llama3_8B_FP8_vLLM",
                     "engine": "vLLM (Source)",
                     "backend": "ROCm",
                     "model": "meta-llama/Meta-Llama-3-8B-Instruct",
@@ -180,7 +180,7 @@ def seed_history(sys_meta, commits):
                     "status": "SUCCESS"
                 },
                 {
-                    "test_id": "CTRL-02",
+                    "test_id": "Llama3_8B_Q4_LlamaCpp",
                     "engine": "llama.cpp (Source)",
                     "backend": "hipBLAS (ROCm)",
                     "model": "meta-llama/Meta-Llama-3-8B-Instruct",
@@ -214,7 +214,7 @@ def run_benchmark_matrix(commits):
     # Define the configurations
     configs = [
         {
-            "test_id": "CTRL-01",
+            "test_id": "Llama3_8B_FP8_vLLM",
             "engine": f"vLLM (Source/{commits['vllm']})",
             "backend": "ROCm",
             "model": "meta-llama/Meta-Llama-3-8B-Instruct",
@@ -229,7 +229,7 @@ def run_benchmark_matrix(commits):
             "vram1": 9.2
         },
         {
-            "test_id": "CTRL-02",
+            "test_id": "Llama3_8B_Q4_LlamaCpp",
             "engine": "llama.cpp (Source)",
             "backend": "hipBLAS (ROCm)",
             "model": "meta-llama/Meta-Llama-3-8B-Instruct",
@@ -244,7 +244,7 @@ def run_benchmark_matrix(commits):
             "vram1": 5.8
         },
         {
-            "test_id": "EDGE-03",
+            "test_id": "Gemma4_26B_FP8_vLLM",
             "engine": f"vLLM (Source/{commits['vllm']})",
             "backend": "ROCm",
             "model": "google/gemma-4-26b-a4b-it",
@@ -259,7 +259,7 @@ def run_benchmark_matrix(commits):
             "vram1": 13.8
         },
         {
-            "test_id": "EDGE-03-TP",
+            "test_id": "Gemma4_26B_FP8_vLLM_TP",
             "engine": f"vLLM (Source/{commits['vllm']})",
             "backend": "ROCm",
             "model": "google/gemma-4-26b-a4b-it",
@@ -274,7 +274,7 @@ def run_benchmark_matrix(commits):
             "vram1": 13.6
         },
         {
-            "test_id": "EDGE-04",
+            "test_id": "Qwen35B_EXL2_ExLlama",
             "engine": f"ExLlamaV2 (Source/{commits['exllamav2']})",
             "backend": "ROCm",
             "model": "Qwen/Qwen3.6-35B-A3B-Instruct",
@@ -289,7 +289,7 @@ def run_benchmark_matrix(commits):
             "vram1": 9.8
         },
         {
-            "test_id": "EDGE-05",
+            "test_id": "Gemma31B_AWQ_MLC",
             "engine": f"MLC LLM (Source/{commits['mlc_llm']})",
             "backend": "Vulkan",
             "model": "google/gemma-4-31b-it",
@@ -304,7 +304,7 @@ def run_benchmark_matrix(commits):
             "vram1": 10.5
         },
         {
-            "test_id": "EDGE-06",
+            "test_id": "Llama4Scout_EXL2_ExLlama",
             "engine": f"ExLlamaV2 (Source/{commits['exllamav2']})",
             "backend": "ROCm",
             "model": "meta-llama/Llama-4-Scout-it",
@@ -319,7 +319,7 @@ def run_benchmark_matrix(commits):
             "vram1": 15.1
         },
         {
-            "test_id": "EDGE-07",
+            "test_id": "Qwen27B_FP8_vLLM",
             "engine": f"vLLM (Source/{commits['vllm']})",
             "backend": "ROCm",
             "model": "Qwen/Qwen3.6-27B-Instruct",
@@ -334,7 +334,7 @@ def run_benchmark_matrix(commits):
             "vram1": 14.8
         },
         {
-            "test_id": "EDGE-08",
+            "test_id": "DeepSeek32B_Q4_LlamaCpp",
             "engine": "llama.cpp (Source)",
             "backend": "Vulkan",
             "model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
@@ -422,6 +422,18 @@ def save_data_and_report(sys_meta, commits, current_results, history):
     # Generate Markdown latest_run.md
     markdown_file = os.path.join(DOCS_DIR, "latest_run.md")
     
+    def get_model_hf_url(model_name):
+        existing_models = [
+            "meta-llama/Meta-Llama-3-8B-Instruct",
+            "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
+        ]
+        if model_name in existing_models:
+            return f"https://huggingface.co/{model_name}"
+        parts = model_name.split('/')
+        if len(parts) > 0:
+            return f"https://huggingface.co/{parts[0]}"
+        return "https://huggingface.co"
+        
     md_content = f"""# Latest Benchmark Run Report
 
 **Date:** {sys_meta['date']}  
@@ -441,12 +453,13 @@ def save_data_and_report(sys_meta, commits, current_results, history):
 
 ## Crucible Matrix Performance Data
 
-| Test ID | Engine | Model | Quant | Parallelism | TTFT (med/p95) | TPOT (med/p95) | Throughput (tok/sec) | VRAM (GPU0/1 GB) |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Test ID | Engine | Model | Quant | TTFT (med/p95) | TPOT (med/p95) | Throughput (tok/sec) | VRAM (GPU0/1 GB) |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 """
     
     for r in current_results:
-        md_content += f"| **{r['test_id']}** | {r['engine']} | `{r['model']}` | {r['quantization']} | {r['parallelism']} | {r['ttft_med']}ms / {r['ttft_p95']}ms | {r['tpot_med']}ms / {r['tpot_p95']}ms | **{r['tokens_sec']}** | {r['vram_gpu0_gb']} / {r['vram_gpu1_gb']} |\n"
+        hf_url = get_model_hf_url(r['model'])
+        md_content += f"| [**{r['test_id']}**]({hf_url}) | {r['engine']} | [`{r['model']}`]({hf_url}) | {r['quantization']} | {r['ttft_med']}ms / {r['ttft_p95']}ms | {r['tpot_med']}ms / {r['tpot_p95']}ms | **{r['tokens_sec']}** | {r['vram_gpu0_gb']} / {r['vram_gpu1_gb']} |\n"
         
     md_content += """
 ---
@@ -456,24 +469,24 @@ def save_data_and_report(sys_meta, commits, current_results, history):
 Based on the empirical benchmark data gathered from our dual Radeon RX 7800 XT (Navi 32, 2 x 16GB) setup running over a PCIe Gen 4 x8/x8 interface, we recommend the following optimal deployment configurations:
 
 ### 1. Best for Low-Latency Chat (Batch = 1)
-*   **Winner:** **EDGE-05** (`google/gemma-4-31b-it` + AWQ 4-bit on **MLC LLM** with **Speculative Decoding**)
+*   **Winner:** **Gemma31B_AWQ_MLC** (`google/gemma-4-31b-it` + AWQ 4-bit on **MLC LLM** with **Speculative Decoding**)
 *   **Latency:** **8.1 ms / token** (Median TPOT) yielding **123.5 tokens/sec**.
 *   **Engineering Note:** Implementing speculative decoding using `Gemma 4 E2B` as a draft model compiled into Vulkan shader kernels completely eclipses standard dense inference speeds, providing over 1.5x the generation rate of native 31B dense models.
 
 ### 2. Best for High-Throughput Batch Processing (Multi-Agent/Bulk Workload)
-*   **Winner:** **EDGE-07** (`Qwen/Qwen3.6-27B-Instruct` + FP8 on **vLLM** with PP=2)
+*   **Winner:** **Qwen27B_FP8_vLLM** (`Qwen/Qwen3.6-27B-Instruct` + FP8 on **vLLM** with PP=2)
 *   **Throughput:** **1237.4 tokens/sec** (Aggregate throughput at Batch=16).
 *   **Engineering Note:** Under concurrent request streams, vLLM's PagedAttention and native FP8 matrix math execute with highly efficient multi-query batching. Slicing the layers sequentially via Pipeline Parallelism (`PP=2`) avoids the PCIe Gen 4 bus collisions that cripple Tensor Parallelism (`TP=2`).
 
 ### 3. Best Context Window Capacity & Efficiency
-*   **Winner:** **EDGE-04** (`Qwen/Qwen3.6-35B-A3B-Instruct` + EXL2 4.0bpw on **ExLlamaV2** with PP=2)
+*   **Winner:** **Qwen35B_EXL2_ExLlama** (`Qwen/Qwen3.6-35B-A3B-Instruct` + EXL2 4.0bpw on **ExLlamaV2** with PP=2)
 *   **Latency:** **9.4 ms / token** yielding **106.4 tokens/sec**.
 *   **Engineering Note:** The Mixture of Experts (MoE) architecture only activates 3B parameters per token. Running on ExLlamaV2's optimized ROCm backend with 4-bit EXL2 quantization requires just 9.8 GB VRAM per GPU, leaving over 6 GB of VRAM per card for hosting massive KV caches and scaling the active context window.
 
 ### 4. Optimal Multi-GPU Sharding (The PCIe Gen 4 x8 Lesson)
-*   **Critical Comparison:** **EDGE-03 (PP=2)** vs. **EDGE-03-TP (TP=2)** running `gemma-4-26b-a4b-it`.
-    *   **PP=2 (Layer Split):** **11.2 ms** TPOT (89.3 tok/sec).
-    *   **TP=2 (Tensor Parallel):** **34.6 ms** TPOT (28.9 tok/sec) — a **3x performance collapse**.
+*   **Critical Comparison:** **Gemma4_26B_FP8_vLLM** (Pipeline Split) vs. **Gemma4_26B_FP8_vLLM_TP** (Tensor Parallel) running `gemma-4-26b-a4b-it`.
+*   **Pipeline Split:** **11.2 ms** TPOT (89.3 tok/sec).
+*   **Tensor Parallel (TP=2):** **34.6 ms** TPOT (28.9 tok/sec) — a **3x performance collapse**.
 *   **Engineering Rule:** For multi-GPU configurations without high-speed interconnects (NVLink/Infinity Fabric), **never use Tensor Parallelism (TP)** for batch=1 latency workloads. The constant all-reduce and all-to-all expert routing transfers saturate the 16 GB/s PCIe Gen 4 x8 slots. **Always offload sequentially (Pipeline Parallelism)** to constrain PCIe traffic to a single boundary transfer.
 """
     
@@ -574,7 +587,7 @@ def generate_charts(current_results, history):
         commit_hash = run["commits"]["vllm"]
         
         for res in run["results"]:
-            if res["test_id"] in ["CTRL-01", "CTRL-02"]:
+            if res["test_id"] in ["Llama3_8B_FP8_vLLM", "Llama3_8B_Q4_LlamaCpp"]:
                 trend_data.append({
                     "date": date_str,
                     "test_id": res["test_id"],
@@ -587,11 +600,11 @@ def generate_charts(current_results, history):
     df_trends = pd.DataFrame(trend_data)
     fig_trends = go.Figure()
     
-    for t_id in ["CTRL-01", "CTRL-02"]:
+    for t_id in ["Llama3_8B_FP8_vLLM", "Llama3_8B_Q4_LlamaCpp"]:
         df_sub = df_trends[df_trends["test_id"] == t_id].sort_values("date")
         
-        color = "#1f77b4" if t_id == "CTRL-01" else "#ff7f0e"
-        name = "CTRL-01 (vLLM Throughput - Batch 8)" if t_id == "CTRL-01" else "CTRL-02 (llama.cpp Latency - Batch 1)"
+        color = "#1f77b4" if t_id == "Llama3_8B_FP8_vLLM" else "#ff7f0e"
+        name = "Llama3_8B_FP8_vLLM (vLLM Throughput - Batch 8)" if t_id == "Llama3_8B_FP8_vLLM" else "Llama3_8B_Q4_LlamaCpp (llama.cpp Latency - Batch 1)"
         
         fig_trends.add_trace(
             go.Scatter(

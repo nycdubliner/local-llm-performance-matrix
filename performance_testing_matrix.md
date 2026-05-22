@@ -92,17 +92,17 @@ On consumer-grade multi-GPU systems without high-speed hardware interconnects (l
 
 The following table defines the 8 test configurations designed to benchmark raw performance. We explicitly prioritize **Pipeline Parallelism (PP) / Layer Splitting** to bypass the PCIe Gen 4 bottleneck, while keeping direct TP test cases to measure the exact latency degradation.
 
-| Test ID | Engine | Backend | Model | Quantization | Parallelism | Optimizations | Target Workload |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **CTRL-01** | vLLM (Source/7.2.3) | ROCm | `meta-llama/Meta-Llama-3-8B-Instruct` | FP8 | **PP=2 (Layer Split)** | FlashAttention-v2, FP8 KV Cache | Batch=8 (Throughput baseline) |
-| **CTRL-02** | llama.cpp (Source) | hipBLAS (ROCm) | `meta-llama/Meta-Llama-3-8B-Instruct` | GGUF (Q4_K_M) | **PP=2 (Layer Split)** | FlashAttention, Layer Offload | Batch=1 (Latency baseline) |
-| **EDGE-03** | vLLM (Source/7.2.3) | ROCm | `google/gemma-4-26b-a4b-it` | FP8 | **PP=2 (Layer Split)** | FlashAttention-v2 (AITER Kernels) | Batch=1 (MoE Layer-Splitting latency) |
-| **EDGE-03-TP** | vLLM (Source/7.2.3) | ROCm | `google/gemma-4-26b-a4b-it` | FP8 | **TP=2 (Tensor Parallel)** | FlashAttention-v2 (AITER Kernels) | Batch=1 (Direct TP PCIe bottleneck test) |
-| **EDGE-04** | ExLlamaV2 (Source) | ROCm | `Qwen/Qwen3.6-35B-A3B-Instruct` | EXL2 (4.0 bpw) | **PP=2 (Layer Split)** | FlashAttention, FP16 KV | Batch=1 (Extreme token gen speed) |
-| **EDGE-05** | MLC LLM (Source) | Vulkan | `google/gemma-4-31b-it` | AWQ (4-bit) | **PP=2 (Layer Split)** | Speculative Decoding (Draft: Gemma 4 E2B) | Batch=1 (Compiled shader latency) |
-| **EDGE-06** | ExLlamaV2 (Source) | ROCm | `meta-llama/Llama-4-Scout-it` | EXL2 (2.2 bpw) | **PP=2 (Layer Split)** | FlashAttention, FP8 KV Cache | Batch=1 (Ultra-compressed 100B+ MoE) |
-| **EDGE-07** | vLLM (Source/7.2.3) | ROCm | `Qwen/Qwen3.6-27B-Instruct` | FP8 | **PP=2 (Layer Split)** | FlashAttention-v2, FP8 KV Cache | Batch=16 (PP throughput test) |
-| **EDGE-08** | llama.cpp (Source) | Vulkan | `deepseek-ai/DeepSeek-R1-Distill-Qwen-32B` | GGUF (Q4_K_M) | **PP=2 (Layer Split)** | FlashAttention, Vulkan Shader compile | Batch=1 (Reasoning model latency) |
+| Test ID | Engine | Backend | Model | Quantization | Optimizations | Target Workload |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Llama3_8B_FP8_vLLM** | vLLM (Source/7.2.3) | ROCm | `meta-llama/Meta-Llama-3-8B-Instruct` | FP8 | FlashAttention-v2, FP8 KV Cache | Batch=8 (Throughput baseline) |
+| **Llama3_8B_Q4_LlamaCpp** | llama.cpp (Source) | hipBLAS (ROCm) | `meta-llama/Meta-Llama-3-8B-Instruct` | GGUF (Q4_K_M) | FlashAttention, Layer Offload | Batch=1 (Latency baseline) |
+| **Gemma4_26B_FP8_vLLM** | vLLM (Source/7.2.3) | ROCm | `google/gemma-4-26b-a4b-it` | FP8 | FlashAttention-v2 (AITER Kernels) | Batch=1 (MoE Layer-Splitting latency) |
+| **Gemma4_26B_FP8_vLLM_TP** | vLLM (Source/7.2.3) | ROCm | `google/gemma-4-26b-a4b-it` | FP8 | FlashAttention-v2 (AITER Kernels) | Batch=1 (Direct TP PCIe bottleneck test) |
+| **Qwen35B_EXL2_ExLlama** | ExLlamaV2 (Source) | ROCm | `Qwen/Qwen3.6-35B-A3B-Instruct` | EXL2 (4.0 bpw) | FlashAttention, FP16 KV | Batch=1 (Extreme token gen speed) |
+| **Gemma31B_AWQ_MLC** | MLC LLM (Source) | Vulkan | `google/gemma-4-31b-it` | AWQ (4-bit) | Speculative Decoding (Draft: Gemma 4 E2B) | Batch=1 (Compiled shader latency) |
+| **Llama4Scout_EXL2_ExLlama** | ExLlamaV2 (Source) | ROCm | `meta-llama/Llama-4-Scout-it` | EXL2 (2.2 bpw) | FlashAttention, FP8 KV Cache | Batch=1 (Ultra-compressed 100B+ MoE) |
+| **Qwen27B_FP8_vLLM** | vLLM (Source/7.2.3) | ROCm | `Qwen/Qwen3.6-27B-Instruct` | FP8 | FlashAttention-v2, FP8 KV Cache | Batch=16 (PP throughput test) |
+| **DeepSeek32B_Q4_LlamaCpp** | llama.cpp (Source) | Vulkan | `deepseek-ai/DeepSeek-R1-Distill-Qwen-32B` | GGUF (Q4_K_M) | FlashAttention, Vulkan Shader compile | Batch=1 (Reasoning model latency) |
 
 ---
 
