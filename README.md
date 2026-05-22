@@ -29,10 +29,20 @@ pip install pandas plotly
 gh auth status
 ```
 
-### 2. Running the Benchmark Automation
+### 2. Update Model Strengths & Configs
+If you are introducing new model configurations to the benchmark:
+1. **Define the config** in the `configs` list inside the `run_benchmark_matrix` function in the execution scripts.
+2. **Register the model's strength rankings** (e.g., LMSYS Chatbot Arena Elo, Coding Elo, and LCB Pass@1) in the JavaScript `modelStrengthMap` registry located inside the HTML files.
+   - For `localai`: `docs/index.html`
+   - For `rig-buy`: `ai-research/index.html`
+
+### 3. Synchronize Repositories
+Since this benchmark suite is hosted in both `localai` and `rig-buy/ai-research`, ensure that changes to `run_benchmarks.py` and `index.html` are replicated in both locations (directories: `/home/tdeburca/git/localai/` and `/home/tdeburca/git/rig-buy/ai-research/`).
+
+### 4. Running the Benchmark Automation
 To execute the benchmark matrix, record historical trends, build the visualizations, and push the updates:
 ```bash
-# 1. Pull the latest repository updates
+# 1. Navigate to the workspace and pull updates
 git pull origin main
 
 # 2. Run the main automation script
