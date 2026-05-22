@@ -1,6 +1,6 @@
 # Latest Benchmark Run Report
 
-**Date:** 2026-05-22T17:12:30Z  
+**Date:** 2026-05-22T17:55:13Z  
 **OS Version:** Ubuntu 26.04 LTS  
 **ROCm SDK Version:** 7.2.3  
 **Python Environment:** Python 3.14.4  
@@ -19,15 +19,15 @@
 
 | Test ID | Engine | Model | Quant | TTFT (med/p95) | TPOT (med/p95) | Throughput (tok/sec) | VRAM (GPU0/1 GB) |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Llama3_8B_FP8_vLLM** | vLLM (Source/8437157) | `meta-llama/Meta-Llama-3-8B-Instruct` | FP8 | 36.65ms / 38.18ms | 7.07ms / 7.25ms | **2546.0** | 9.2 / 9.2 |
-| **Llama3_8B_Q4_LlamaCpp** | llama.cpp (Source) | `meta-llama/Meta-Llama-3-8B-Instruct` | GGUF (Q4_K_M) | 26.89ms / 28.46ms | 12.68ms / 13.16ms | **78.9** | 5.8 / 5.8 |
-| **Gemma4_26B_FP8_vLLM** | vLLM (Source/8437157) | `google/gemma-4-26b-a4b-it` | FP8 | 52.46ms / 53.64ms | 11.28ms / 11.59ms | **88.7** | 13.8 / 13.8 |
-| **Gemma4_26B_FP8_vLLM_TP** | vLLM (Source/8437157) | `google/gemma-4-26b-a4b-it` | FP8 | 114.39ms / 115.18ms | 33.94ms / 35.24ms | **29.5** | 13.6 / 13.6 |
-| **Qwen35B_EXL2_ExLlama** | ExLlamaV2 (Source/7dc12af) | `Qwen/Qwen3.6-35B-A3B-Instruct` | EXL2 (4.0 bpw) | 39.36ms / 40.89ms | 9.62ms / 9.66ms | **104.0** | 9.8 / 9.8 |
-| **Gemma31B_AWQ_MLC** | MLC LLM (Source/2008fe8) | `google/gemma-4-31b-it` | AWQ (4-bit) | 72.34ms / 76.92ms | 7.99ms / 8.3ms | **125.2** | 10.5 / 10.5 |
-| **Llama4Scout_EXL2_ExLlama** | ExLlamaV2 (Source/7dc12af) | `meta-llama/Llama-4-Scout-it` | EXL2 (2.2 bpw) | 146.27ms / 151.54ms | 22.51ms / 23.1ms | **44.4** | 15.1 / 15.1 |
-| **Qwen27B_FP8_vLLM** | vLLM (Source/8437157) | `Qwen/Qwen3.6-27B-Instruct` | FP8 | 91.51ms / 96.56ms | 20.23ms / 20.42ms | **1211.1** | 14.8 / 14.8 |
-| **DeepSeek32B_Q4_LlamaCpp** | llama.cpp (Source) | `deepseek-ai/DeepSeek-R1-Distill-Qwen-32B` | GGUF (Q4_K_M) | 42.22ms / 44.22ms | 29.75ms / 30.66ms | **33.6** | 10.2 / 10.2 |
+| [**Llama3_8B_FP8_vLLM**](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) | vLLM (Source/8437157) | [`meta-llama/Meta-Llama-3-8B-Instruct`](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) | FP8 | 36.48ms / 37.13ms | 7.04ms / 7.32ms | **2556.8** | 9.2 / 9.2 |
+| [**Llama3_8B_Q4_LlamaCpp**](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) | llama.cpp (Source) | [`meta-llama/Meta-Llama-3-8B-Instruct`](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) | GGUF (Q4_K_M) | 26.65ms / 27.9ms | 12.8ms / 12.97ms | **78.1** | 5.8 / 5.8 |
+| [**Gemma4_26B_FP8_vLLM**](https://huggingface.co/google) | vLLM (Source/8437157) | [`google/gemma-4-26b-a4b-it`](https://huggingface.co/google) | FP8 | 53.93ms / 55.03ms | 11.25ms / 11.64ms | **88.9** | 13.8 / 13.8 |
+| [**Gemma4_26B_FP8_vLLM_TP**](https://huggingface.co/google) | vLLM (Source/8437157) | [`google/gemma-4-26b-a4b-it`](https://huggingface.co/google) | FP8 | 113.43ms / 117.4ms | 34.91ms / 35.52ms | **28.6** | 13.6 / 13.6 |
+| [**Qwen35B_EXL2_ExLlama**](https://huggingface.co/Qwen) | ExLlamaV2 (Source/7dc12af) | [`Qwen/Qwen3.6-35B-A3B-Instruct`](https://huggingface.co/Qwen) | EXL2 (4.0 bpw) | 38.78ms / 40.17ms | 9.57ms / 9.75ms | **104.5** | 9.8 / 9.8 |
+| [**Gemma31B_AWQ_MLC**](https://huggingface.co/google) | MLC LLM (Source/2008fe8) | [`google/gemma-4-31b-it`](https://huggingface.co/google) | AWQ (4-bit) | 74.14ms / 76.99ms | 8.36ms / 8.41ms | **119.6** | 10.5 / 10.5 |
+| [**Llama4Scout_EXL2_ExLlama**](https://huggingface.co/meta-llama) | ExLlamaV2 (Source/7dc12af) | [`meta-llama/Llama-4-Scout-it`](https://huggingface.co/meta-llama) | EXL2 (2.2 bpw) | 147.66ms / 148.19ms | 22.39ms / 22.96ms | **44.7** | 15.1 / 15.1 |
+| [**Qwen27B_FP8_vLLM**](https://huggingface.co/Qwen) | vLLM (Source/8437157) | [`Qwen/Qwen3.6-27B-Instruct`](https://huggingface.co/Qwen) | FP8 | 90.46ms / 96.76ms | 19.85ms / 20.16ms | **1234.3** | 14.8 / 14.8 |
+| [**DeepSeek32B_Q4_LlamaCpp**](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B) | llama.cpp (Source) | [`deepseek-ai/DeepSeek-R1-Distill-Qwen-32B`](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B) | GGUF (Q4_K_M) | 42.98ms / 44.28ms | 29.68ms / 30.39ms | **33.7** | 10.2 / 10.2 |
 
 ---
 
