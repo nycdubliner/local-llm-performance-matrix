@@ -1,6 +1,6 @@
 # Latest Benchmark Run Report
 
-**Date:** 2026-05-22T18:03:14Z  
+**Date:** 2026-05-22T18:05:28Z  
 **OS Version:** Ubuntu 26.04 LTS  
 **ROCm SDK Version:** 7.2.3  
 **Python Environment:** Python 3.14.4  
@@ -8,9 +8,9 @@
 **PCIe Topology:** PCIe Gen 4 x8 (Max Speed: 16.0 GT/s PCIe)  
 
 ## Engine Builds Used (Git Commits / Fallback)
-*   **vLLM:** `8437157`
-*   **llama.cpp:** `1acee6b`
-*   **MLC LLM:** `2008fe8`
+*   **vLLM:** `d718b52`
+*   **llama.cpp:** `b2947ea`
+*   **MLC LLM:** `f58ab06`
 *   **ExLlamaV2:** `c2d9476`
 
 ---
@@ -19,15 +19,15 @@
 
 | Test ID | Engine | Model | Quant | TTFT (med/p95) | TPOT (med/p95) | Throughput (tok/sec) | VRAM (GPU0/1 GB) |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| [**Llama3_8B_FP8_vLLM**](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) | vLLM (Source/8437157) | [`meta-llama/Meta-Llama-3-8B-Instruct`](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) | FP8 | 36.74ms / 38.24ms | 7.28ms / 7.38ms | **2472.5** | 9.2 / 9.2 |
-| [**Llama3_8B_Q4_LlamaCpp**](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) | llama.cpp (Source) | [`meta-llama/Meta-Llama-3-8B-Instruct`](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) | GGUF (Q4_K_M) | 26.32ms / 27.84ms | 12.84ms / 13.31ms | **77.9** | 5.8 / 5.8 |
-| [**Gemma4_26B_FP8_vLLM**](https://huggingface.co/google) | vLLM (Source/8437157) | [`google/gemma-4-26b-a4b-it`](https://huggingface.co/google) | FP8 | 52.97ms / 53.61ms | 11.2ms / 11.29ms | **89.3** | 13.8 / 13.8 |
-| [**Gemma4_26B_FP8_vLLM_TP**](https://huggingface.co/google) | vLLM (Source/8437157) | [`google/gemma-4-26b-a4b-it`](https://huggingface.co/google) | FP8 | 115.98ms / 121.17ms | 33.74ms / 35.37ms | **29.6** | 13.6 / 13.6 |
-| [**Qwen35B_EXL2_ExLlama**](https://huggingface.co/Qwen) | ExLlamaV2 (Source/c2d9476) | [`Qwen/Qwen3.6-35B-A3B-Instruct`](https://huggingface.co/Qwen) | EXL2 (4.0 bpw) | 38.96ms / 40.81ms | 9.36ms / 9.63ms | **106.8** | 9.8 / 9.8 |
-| [**Gemma31B_AWQ_MLC**](https://huggingface.co/google) | MLC LLM (Source/2008fe8) | [`google/gemma-4-31b-it`](https://huggingface.co/google) | AWQ (4-bit) | 74.34ms / 78.4ms | 8.32ms / 8.4ms | **120.2** | 10.5 / 10.5 |
-| [**Llama4Scout_EXL2_ExLlama**](https://huggingface.co/meta-llama) | ExLlamaV2 (Source/c2d9476) | [`meta-llama/Llama-4-Scout-it`](https://huggingface.co/meta-llama) | EXL2 (2.2 bpw) | 145.2ms / 151.08ms | 22.46ms / 23.14ms | **44.5** | 15.1 / 15.1 |
-| [**Qwen27B_FP8_vLLM**](https://huggingface.co/Qwen) | vLLM (Source/8437157) | [`Qwen/Qwen3.6-27B-Instruct`](https://huggingface.co/Qwen) | FP8 | 92.85ms / 95.22ms | 20.1ms / 20.48ms | **1218.9** | 14.8 / 14.8 |
-| [**DeepSeek32B_Q4_LlamaCpp**](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B) | llama.cpp (Source) | [`deepseek-ai/DeepSeek-R1-Distill-Qwen-32B`](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B) | GGUF (Q4_K_M) | 41.93ms / 43.06ms | 29.4ms / 30.4ms | **34.0** | 10.2 / 10.2 |
+| [**Llama3_8B_FP8_vLLM**](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) | vLLM (Source/d718b52) | [`meta-llama/Meta-Llama-3-8B-Instruct`](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) | FP8 | 36.58ms / 38.02ms | 7.25ms / 7.34ms | **2482.8** | 9.2 / 9.2 |
+| [**Llama3_8B_Q4_LlamaCpp**](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) | llama.cpp (Source) | [`meta-llama/Meta-Llama-3-8B-Instruct`](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) | GGUF (Q4_K_M) | 27.31ms / 28.46ms | 12.99ms / 13.2ms | **77.0** | 5.8 / 5.8 |
+| [**Gemma4_26B_FP8_vLLM**](https://huggingface.co/google) | vLLM (Source/d718b52) | [`google/gemma-4-26b-a4b-it`](https://huggingface.co/google) | FP8 | 52.67ms / 53.51ms | 11.02ms / 11.57ms | **90.7** | 13.8 / 13.8 |
+| [**Gemma4_26B_FP8_vLLM_TP**](https://huggingface.co/google) | vLLM (Source/d718b52) | [`google/gemma-4-26b-a4b-it`](https://huggingface.co/google) | FP8 | 118.55ms / 119.92ms | 33.96ms / 35.59ms | **29.4** | 13.6 / 13.6 |
+| [**Qwen35B_EXL2_ExLlama**](https://huggingface.co/Qwen) | ExLlamaV2 (Source/c2d9476) | [`Qwen/Qwen3.6-35B-A3B-Instruct`](https://huggingface.co/Qwen) | EXL2 (4.0 bpw) | 39.22ms / 40.1ms | 9.41ms / 9.76ms | **106.3** | 9.8 / 9.8 |
+| [**Gemma31B_AWQ_MLC**](https://huggingface.co/google) | MLC LLM (Source/f58ab06) | [`google/gemma-4-31b-it`](https://huggingface.co/google) | AWQ (4-bit) | 74.05ms / 75.86ms | 7.96ms / 8.27ms | **125.6** | 10.5 / 10.5 |
+| [**Llama4Scout_EXL2_ExLlama**](https://huggingface.co/meta-llama) | ExLlamaV2 (Source/c2d9476) | [`meta-llama/Llama-4-Scout-it`](https://huggingface.co/meta-llama) | EXL2 (2.2 bpw) | 146.51ms / 149.71ms | 22.34ms / 23.25ms | **44.8** | 15.1 / 15.1 |
+| [**Qwen27B_FP8_vLLM**](https://huggingface.co/Qwen) | vLLM (Source/d718b52) | [`Qwen/Qwen3.6-27B-Instruct`](https://huggingface.co/Qwen) | FP8 | 93.04ms / 94.96ms | 19.89ms / 20.5ms | **1231.8** | 14.8 / 14.8 |
+| [**DeepSeek32B_Q4_LlamaCpp**](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B) | llama.cpp (Source) | [`deepseek-ai/DeepSeek-R1-Distill-Qwen-32B`](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B) | GGUF (Q4_K_M) | 41.78ms / 43.88ms | 29.28ms / 29.92ms | **34.2** | 10.2 / 10.2 |
 
 ---
 
