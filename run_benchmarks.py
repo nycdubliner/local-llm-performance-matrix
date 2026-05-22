@@ -453,7 +453,7 @@ def save_data_and_report(sys_meta, commits, current_results, history):
 
 ## Crucible Matrix Performance Data
 
-| Test ID | Engine | Model | Quant | TTFT (med/p95) | TPOT (med/p95) | Throughput (tok/sec) | VRAM (GPU0/1 GB) |
+| Test ID | Engine | Model | Quantization | TTFT (Med/P95) | TPOT (Med/P95) | Throughput (Tok/s) | VRAM (GPU0/GPU1) |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 """
     
@@ -564,10 +564,17 @@ def generate_charts(current_results, history):
     fig_snap.update_layout(
         title="Crucible Benchmark Snapshot: Latency Performance Profile (2 x 16GB RX 7800 XT)",
         barmode="group",
-        height=700,
+        height=650,
         showlegend=True,
         template="plotly_dark",
-        margin=dict(l=50, r=50, t=100, b=50)
+        margin=dict(l=50, r=50, t=80, b=80),
+        legend=dict(
+            orientation="h",
+            yanchor="top",
+            y=-0.12,
+            xanchor="center",
+            x=0.5
+        )
     )
     
     fig_snap.update_yaxes(title_text="Latency (ms)", row=1, col=1)
@@ -623,10 +630,17 @@ def generate_charts(current_results, history):
         title="Longitudinal Performance Trend: Control Models Over Time",
         xaxis_title="Execution Date",
         yaxis_title="Throughput (Tokens / Second)",
-        height=500,
+        height=480,
         template="plotly_dark",
         showlegend=True,
-        margin=dict(l=50, r=50, t=100, b=50)
+        margin=dict(l=50, r=50, t=80, b=100),
+        legend=dict(
+            orientation="h",
+            yanchor="top",
+            y=-0.18,
+            xanchor="center",
+            x=0.5
+        )
     )
     
     trends_path = os.path.join(CHARTS_DIR, "trends.html")
@@ -641,7 +655,7 @@ def deploy_to_gh_pages():
         subprocess.check_call(["git", "status"], cwd=WORKSPACE_DIR)
         
         # Add files to git
-        subprocess.check_call(["git", "add", "docs/"], cwd=WORKSPACE_DIR)
+        subprocess.check_call(["git", "add", "."], cwd=WORKSPACE_DIR)
         
         # Check if there are changes to commit
         status = subprocess.check_output(["git", "status", "--porcelain"], cwd=WORKSPACE_DIR).decode()

@@ -1,0 +1,119 @@
+Prompt 1: The Matrix Architect
+
+/goal Create a comprehensive, multi-dimensional performance testing matrix for Local LLMs operating on a split 2 x 16GB AMD GPU configuration (connected via 2 x 8 PCIe channels), prioritizing maximum speed over stability, designed for longitudinal progress tracking.
+
+Role:
+Act as a Senior AI Infrastructure Engineer and Performance Researcher specializing in bleeding-edge local inference, multi-GPU optimization, edge AI deployments, and longitudinal performance tracking.
+
+Context:
+I am building a testing framework to determine the absolute maximum inference speed (State of the Art throughput and latency) for a local AI setup utilizing a 2 x 16GB AMD GPU configuration (32GB total AMD VRAM) linked via a 2 x 8 PCIe channel topology. We are prioritizing maximum speed over system stability, meaning we will leverage experimental features, nightlies, and aggressive optimizations.
+
+Crucially, this matrix will be executed periodically (e.g., monthly) to capture the velocity of innovation in the open-source AI space. Therefore, the matrix must balance the absolute newest models with a stable "Control" to measure engine optimizations over time.
+
+The elements involved include, but are not limited to:
+
+Engines: vLLM, llama.cpp, MLC LLM. (Expand to sensible neighbors like ExLlamaV2, TensorRT-LLM, noting if they lack AMD support).
+
+Backends: ROCm, Vulkan. (Focus strictly on AMD-compatible backends; treat CUDA and Metal as out of scope).
+
+Architectures & Providers: Dense models, Mixture of Experts (MoE). Crucial: You must identify the absolute latest model versions. Do not rely on outdated training data. (e.g., look for Gemma 4, Qwen 3.6, Llama 4, etc.).
+
+Quantizations: GGUF, AWQ, EXL2, FP8.
+
+Optimizations: Turbo Quant, Multi-Token Prediction (MTP), Speculative Decoding, KV Cache Quantization, FlashAttention.
+
+Multi-GPU Dynamics: Tensor Parallelism (TP), Pipeline Parallelism (PP), and interconnect overhead across the 8x PCIe lanes.
+
+Instructions:
+
+Verify the Bleeding Edge: Before doing anything else, actively bypass your training data cutoff. Use your web search capabilities or real-time knowledge access to identify the absolute latest state-of-the-art models released as of today. Do not suggest older generations if newer ones exist.
+
+Define the Multidimensional Grid: Map out the 6 critical dimensions of local LLM testing (Engines/Backends, Model Architectures, Quantization Formats, Runtime Optimizations, Multi-GPU Sharding Strategies, and Workload Scenarios). Briefly explain why each matters for a split 2x16GB AMD setup seeking max speed over limited PCIe lanes.
+
+Construct the "Crucible Matrix" (With Control): Create a representative Markdown table containing 6-8 highly specific test configurations.
+
+The Control: At least 1-2 rows MUST use a static, widely known model (e.g., Llama-3-8B-Instruct) across different engines. This acts as our longitudinal baseline to track engine/ROCm improvements over time.
+
+The Edge: The remaining rows must push the boundaries of speed with the absolute newest SOTA models and experimental optimizations you found in Step 1.
+
+Include columns for Test ID, Engine (indicate Nightly/Source), Backend, Model (must be up-to-date), Quantization, Parallelism (TP/PP), Optimizations, and Target Workload.
+
+Define Captured Metrics (The Knowns): Explicitly list the quantitative metrics. In addition to TTFT, TPOT, and Max Tokens/Second, mandate the capture of Hardware Metadata (Chipset, total VRAM, PCIe topology layout) and Software Metadata (exact Git commit hashes for engines, ROCm version, model repo tags).
+
+Identify Blind Spots (The Unknowns): Explicitly detail what these performance tests will fail to capture. Focus on real-world degradation issues, interconnect latency masking, and the inherent instability of nightly builds.
+
+Constraints:
+
+You MUST verify the current SOTA models via live search before writing the matrix.
+
+Strictly adhere to the 2 x 16GB AMD GPU memory boundary and the constraints of a 2 x 8 PCIe link.
+
+Assume the goal is raw speed; do not compromise performance for software stability.
+
+Format in clean, highly readable Markdown.
+
+Prompt 2: The Matrix Executor (Web-Publishing Edition)
+
+/goal Execute the provided "Crucible Matrix" testing plan (found in performance_testing_matrix.md) on the host machine, building from source/nightlies to maximize speed. Append the results to a structured JSON dataset and generate interactive HTML visualizations ready for GitHub Pages publishing, concluding with SOTA recommendations.
+
+Role:
+Act as an Autonomous QA Automation Engineer and Systems Administrator. You are relentless in the pursuit of performance, comfortable with kernel panics, highly proficient in compiling cutting-edge software from source for AMD GPUs, and experienced with static-site web publishing workflows.
+
+Context:
+You have been provided with a "Crucible Matrix" (located in the file performance_testing_matrix.md) detailing specific Local LLM configurations prioritized for maximum speed. You have full shell/root access to the host environment (two 16GB AMD GPUs operating in an 8x / 8x PCIe topology). This is a recurring test. You are tasked not only with executing the current matrix but also preserving the data in a web-friendly format so it can be deployed as an interactive Dashboard via GitHub Pages, complete with automated insights.
+
+Instructions:
+
+Environment Preparation & Metadata Capture:
+
+Verify host hardware using rocm-smi and rocm-smi --showtopo to establish baseline VRAM, Chipset, memory configuration, and the specific PCIe topology. This is critical as future runs may occur on upgraded hardware.
+
+Crucial: Record the current Date, OS version, ROCm driver version, and Python environment version.
+
+Attempt to build the required inference engines from their current main branches (nightly). If a nightly build fails to compile, automatically fall back to building the latest tagged stable release. Record the exact Git Commit Hash (or release tag) for every engine built.
+
+Execution Loop (Per Matrix Row in performance_testing_matrix.md):
+
+Provision: Download specified weights. Record the exact HuggingFace repo ID and tag/commit.
+
+Configure: Launch the engine utilizing specified multi-GPU strategies and aggressive optimizations.
+
+Warm-up: Run 2-3 dummy queries.
+
+Test: Execute the designated Target Workload a minimum of 5 times ($N \ge 5$) with a strict timeout to prevent hard hangs. Record the median and $p95$ metrics for TTFT, TPOT, and Throughput to account for system variance.
+
+Capture: Record the aggregated timing metrics and VRAM balancing metrics.
+
+Data Persistence (GitHub Pages Ready):
+
+Append the results of this execution to a persistent, structured JSON file (e.g., docs/data/llm_benchmark_history.json).
+
+The JSON structure MUST include nested metadata (Date, Hardware Topology, Chipset, ROCm version) so that a front-end web framework can easily filter and sort the data.
+
+Teardown & Cleanup:
+
+Aggressively kill inference processes after each test. Ensure VRAM on both GPUs is completely flushed.
+
+Delete model weights from previous successful tests before pulling new ones if disk space drops below 20%.
+
+Reporting, Recommendations, & Interactive Visualization:
+
+Output the fully populated Crucible Matrix in Markdown format with the current run's data, saving it as docs/latest_run.md.
+
+Actionable Recommendations: At the bottom of docs/latest_run.md, analyze the newly gathered data and write a "SOTA Recommendations" section. Explicitly declare the winning combinations (Engine + Model + Quantization) for specific tasks on this exact hardware (e.g., "Best for Low-Latency Chat," "Best for High-Throughput Batch Processing," "Best Context Window limits").
+
+Graph Generation: Use a Python library capable of exporting interactive HTML (e.g., plotly or bokeh—DO NOT use static matplotlib PNGs). Generate two HTML components:
+
+Current Snapshot (docs/charts/snapshot.html): Interactive bar charts comparing median and $p95$ TTFT and TPOT across the current test IDs. Tooltips must show the Engine and Quantization.
+
+Longitudinal Trends (docs/charts/trends.html): Interactive line graphs tracking the "Control Models" over time. Tooltips must show exact Date, Hardware Config, Tokens/Sec, and the Engine Git Commit Hash.
+
+If configured, execute a git add, git commit -m "Automated benchmark update", and git push to deploy the changes to the static site.
+
+Constraints:
+
+Never run two inference engines simultaneously.
+
+If a compilation fails on main, do not halt; execute the fallback to the latest stable release. If a runtime test fails (e.g., OOM, ROCm segmentation fault), catch the error, log the specific failure traceback in the historical dataset, clean the environment, and proceed.
+
+All data outputs must be formatted cleanly for web ingestion (JSON over CSV, Interactive HTML over static images).

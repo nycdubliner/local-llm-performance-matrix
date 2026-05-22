@@ -25,6 +25,10 @@
             --font-mono: 'Space Grotesk', monospace;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -258,8 +262,14 @@
             padding: 16px 20px;
             border-bottom: 2px solid var(--border-color);
             transition: background 0.2s ease, color 0.2s ease;
-            vertical-align: middle;
             white-space: nowrap;
+        }
+
+        .th-content {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            vertical-align: middle;
         }
 
         th:hover {
@@ -592,15 +602,15 @@
                     <table>
                         <thead>
                             <tr>
-                                <th onclick="sortBy('test_id')" style="cursor: pointer; user-select: none;">Test ID <span id="sort-icon-test_id">↕</span></th>
-                                <th onclick="sortBy('engine')" style="cursor: pointer; user-select: none;">Engine <span id="sort-icon-engine">↕</span></th>
-                                <th onclick="sortBy('strength')" style="cursor: pointer; user-select: none;"><span id="strength-header-label">Strength (Arena Elo)</span> <span id="sort-icon-strength">↕</span></th>
-                                <th class="model-col" onclick="sortBy('model')" style="cursor: pointer; user-select: none; display: none;">Model Name <span id="sort-icon-model">↕</span></th>
-                                <th onclick="sortBy('quantization')" style="cursor: pointer; user-select: none;">Quantization <span id="sort-icon-quantization">↕</span></th>
-                                <th onclick="sortBy('ttft_med')" style="cursor: pointer; user-select: none;">TTFT (Med/P95) <span id="sort-icon-ttft_med">↕</span></th>
-                                <th onclick="sortBy('tpot_med')" style="cursor: pointer; user-select: none;">TPOT (Med/P95) <span id="sort-icon-tpot_med">↕</span></th>
-                                <th onclick="sortBy('tokens_sec')" style="cursor: pointer; user-select: none;">Throughput <span id="sort-icon-tokens_sec">↕</span></th>
-                                <th onclick="sortBy('vram_gpu0_gb')" style="cursor: pointer; user-select: none;">VRAM (GPU0/GPU1) <span id="sort-icon-vram_gpu0_gb">↕</span></th>
+                                <th onclick="sortBy('test_id')" style="cursor: pointer; user-select: none;"><span class="th-content">Test ID <span id="sort-icon-test_id">↕</span></span></th>
+                                <th onclick="sortBy('engine')" style="cursor: pointer; user-select: none;"><span class="th-content">Engine <span id="sort-icon-engine">↕</span></span></th>
+                                <th onclick="sortBy('strength')" style="cursor: pointer; user-select: none;"><span class="th-content"><span id="strength-header-label">Strength (Arena Elo)</span> <span id="sort-icon-strength">↕</span></span></th>
+                                <th class="model-col" onclick="sortBy('model')" style="cursor: pointer; user-select: none; display: none;"><span class="th-content">Model Name <span id="sort-icon-model">↕</span></span></th>
+                                <th onclick="sortBy('quantization')" style="cursor: pointer; user-select: none;"><span class="th-content">Quantization <span id="sort-icon-quantization">↕</span></span></th>
+                                <th onclick="sortBy('ttft_med')" style="cursor: pointer; user-select: none;"><span class="th-content">TTFT (Med/P95) <span id="sort-icon-ttft_med">↕</span></span></th>
+                                <th onclick="sortBy('tpot_med')" style="cursor: pointer; user-select: none;"><span class="th-content">TPOT (Med/P95) <span id="sort-icon-tpot_med">↕</span></span></th>
+                                <th onclick="sortBy('tokens_sec')" style="cursor: pointer; user-select: none;"><span class="th-content">Throughput (Tok/s) <span id="sort-icon-tokens_sec">↕</span></span></th>
+                                <th onclick="sortBy('vram_gpu0_gb')" style="cursor: pointer; user-select: none;"><span class="th-content">VRAM (GPU0/GPU1) <span id="sort-icon-vram_gpu0_gb">↕</span></span></th>
                             </tr>
                         </thead>
                         <tbody id="matrix-tbody">
