@@ -250,6 +250,12 @@
             font-weight: 600;
             padding: 16px 20px;
             border-bottom: 2px solid var(--border-color);
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        th:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--primary);
         }
 
         td {
@@ -267,6 +273,7 @@
             font-weight: 700;
             color: var(--accent);
         }
+
 
         .tput-val {
             font-weight: 800;
@@ -462,20 +469,19 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Test ID</th>
-                                <th>Engine</th>
-                                <th>Model Name</th>
-                                <th>Quant</th>
-                                <th>Parallelism</th>
-                                <th>TTFT (med/p95)</th>
-                                <th>TPOT (med/p95)</th>
-                                <th>Throughput</th>
-                                <th>VRAM (G0/G1)</th>
+                                <th onclick="sortBy('test_id')" style="cursor: pointer; user-select: none;">Test ID <span id="sort-icon-test_id">↕</span></th>
+                                <th onclick="sortBy('engine')" style="cursor: pointer; user-select: none;">Engine <span id="sort-icon-engine">↕</span></th>
+                                <th onclick="sortBy('model')" style="cursor: pointer; user-select: none;">Model Name <span id="sort-icon-model">↕</span></th>
+                                <th onclick="sortBy('quantization')" style="cursor: pointer; user-select: none;">Quant <span id="sort-icon-quantization">↕</span></th>
+                                <th onclick="sortBy('ttft_med')" style="cursor: pointer; user-select: none;">TTFT (med/p95) <span id="sort-icon-ttft_med">↕</span></th>
+                                <th onclick="sortBy('tpot_med')" style="cursor: pointer; user-select: none;">TPOT (med/p95) <span id="sort-icon-tpot_med">↕</span></th>
+                                <th onclick="sortBy('tokens_sec')" style="cursor: pointer; user-select: none;">Throughput <span id="sort-icon-tokens_sec">↕</span></th>
+                                <th onclick="sortBy('vram_gpu0_gb')" style="cursor: pointer; user-select: none;">VRAM (G0/G1) <span id="sort-icon-vram_gpu0_gb">↕</span></th>
                             </tr>
                         </thead>
                         <tbody id="matrix-tbody">
                             <!-- Dynamically loaded -->
-                            <tr><td colspan="9" style="text-align: center; color: var(--text-dim);">Loading benchmark execution results...</td></tr>
+                            <tr><td colspan="8" style="text-align: center; color: var(--text-dim);">Loading benchmark execution results...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -556,6 +562,72 @@
             evt.currentTarget.classList.add("active");
         }
 
+        let latestRunResults = [];
+        let sortField = '';
+        let sortAscending = true;
+
+        function renderTable(results) {
+            const tbody = document.getElementById('matrix-tbody');
+            tbody.innerHTML = '';
+            
+            results.forEach(res => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="test-id-badge">${res.test_id}</td>
+                    <td>${res.engine}</td>
+                    <td><code>${res.model}</code></td>
+                    <td>${res.quantization}</td>
+                    <td>${res.ttft_med}ms / ${res.ttft_p95}ms</td>
+                    <td>${res.tpot_med}ms / ${res.tpot_p95}ms</td>
+                    <td class="tput-val">${res.tokens_sec}</td>
+                    <td class="vram-val">${res.vram_gpu0_gb} / ${res.vram_gpu1_gb}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateHeaderStyles() {
+            const fields = ['test_id', 'engine', 'model', 'quantization', 'ttft_med', 'tpot_med', 'tokens_sec', 'vram_gpu0_gb'];
+            fields.forEach(f => {
+                const iconSpan = document.getElementById(`sort-icon-${f}`);
+                if (iconSpan) {
+                    if (sortField === f) {
+                        iconSpan.innerHTML = sortAscending ? ' ▲' : ' ▼';
+                        iconSpan.style.color = 'var(--primary)';
+                    } else {
+                        iconSpan.innerHTML = ' ↕';
+                        iconSpan.style.color = 'var(--text-dim)';
+                    }
+                }
+            });
+        }
+
+        function sortBy(field) {
+            if (sortField === field) {
+                sortAscending = !sortAscending;
+            } else {
+                sortField = field;
+                sortAscending = true;
+            }
+            
+            latestRunResults.sort((a, b) => {
+                let valA = a[field];
+                let valB = b[field];
+                
+                if (valA === undefined) return 1;
+                if (valB === undefined) return -1;
+                
+                if (typeof valA === 'string') {
+                    return sortAscending ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                } else {
+                    return sortAscending ? valA - valB : valB - valA;
+                }
+            });
+            
+            updateHeaderStyles();
+            renderTable(latestRunResults);
+        }
+
         // Fetch dynamic results
         fetch('data/llm_benchmark_history.json')
             .then(response => response.json())
@@ -593,25 +665,10 @@
                     </div>
                 `;
 
-                // Populate Table
-                const tbody = document.getElementById('matrix-tbody');
-                tbody.innerHTML = '';
-                
-                latestRun.results.forEach(res => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="test-id-badge">${res.test_id}</td>
-                        <td>${res.engine}</td>
-                        <td><code>${res.model}</code></td>
-                        <td>${res.quantization}</td>
-                        <td>${res.parallelism}</td>
-                        <td>${res.ttft_med}ms / ${res.ttft_p95}ms</td>
-                        <td>${res.tpot_med}ms / ${res.tpot_p95}ms</td>
-                        <td class="tput-val">${res.tokens_sec}</td>
-                        <td class="vram-val">${res.vram_gpu0_gb} / ${res.vram_gpu1_gb}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
+                // Set results and render
+                latestRunResults = latestRun.results;
+                renderTable(latestRunResults);
+                updateHeaderStyles();
             })
             .catch(error => {
                 console.error("Error loading benchmark database:", error);
