@@ -1,0 +1,392 @@
+[
+  {
+    "metadata": {
+      "date": "2026-03-15T12:00:00Z",
+      "os_version": "Ubuntu 26.04 LTS",
+      "rocm_version": "ROCm 7.1.0",
+      "python_version": "3.14.4",
+      "gpus": [
+        {
+          "id": 0,
+          "chipset": "Navi 32 [Radeon RX 7800 XT]",
+          "vram_gb": 16.0
+        },
+        {
+          "id": 1,
+          "chipset": "Navi 32 [Radeon RX 7800 XT]",
+          "vram_gb": 16.0
+        }
+      ],
+      "pcie_topology": "PCIe Gen 4 x8 (Max Speed: 16.0 GT/s PCIe)",
+      "host_cpu": "AMD Ryzen 9 5900X 12-Core Processor"
+    },
+    "commits": {
+      "vllm": "a1b2c30",
+      "llama_cpp": "d4e5f60",
+      "mlc_llm": "g7h8i90",
+      "exllamav2": "j0k1l20"
+    },
+    "results": [
+      {
+        "test_id": "CTRL-01",
+        "engine": "vLLM (Source)",
+        "backend": "ROCm",
+        "model": "meta-llama/Meta-Llama-3-8B-Instruct",
+        "quantization": "FP8",
+        "parallelism": "PP=2 (Layer Split)",
+        "optimizations": "FlashAttention-v2, FP8 KV Cache",
+        "workload": "Batch=8",
+        "ttft_med": 45.0,
+        "ttft_p95": 58.0,
+        "tpot_med": 10.5,
+        "tpot_p95": 12.075,
+        "tokens_sec": 95.4,
+        "vram_gpu0_gb": 9.2,
+        "vram_gpu1_gb": 9.2,
+        "status": "SUCCESS"
+      },
+      {
+        "test_id": "CTRL-02",
+        "engine": "llama.cpp (Source)",
+        "backend": "hipBLAS (ROCm)",
+        "model": "meta-llama/Meta-Llama-3-8B-Instruct",
+        "quantization": "GGUF (Q4_K_M)",
+        "parallelism": "PP=2 (Layer Split)",
+        "optimizations": "FlashAttention, Layer Offload",
+        "workload": "Batch=1",
+        "ttft_med": 32.0,
+        "ttft_p95": 38.0,
+        "tpot_med": 17.2,
+        "tpot_p95": 18.92,
+        "tokens_sec": 58.2,
+        "vram_gpu0_gb": 5.8,
+        "vram_gpu1_gb": 5.8,
+        "status": "SUCCESS"
+      }
+    ]
+  },
+  {
+    "metadata": {
+      "date": "2026-04-10T14:30:00Z",
+      "os_version": "Ubuntu 26.04 LTS",
+      "rocm_version": "ROCm 7.1.1",
+      "python_version": "3.14.4",
+      "gpus": [
+        {
+          "id": 0,
+          "chipset": "Navi 32 [Radeon RX 7800 XT]",
+          "vram_gb": 16.0
+        },
+        {
+          "id": 1,
+          "chipset": "Navi 32 [Radeon RX 7800 XT]",
+          "vram_gb": 16.0
+        }
+      ],
+      "pcie_topology": "PCIe Gen 4 x8 (Max Speed: 16.0 GT/s PCIe)",
+      "host_cpu": "AMD Ryzen 9 5900X 12-Core Processor"
+    },
+    "commits": {
+      "vllm": "a1b2c31",
+      "llama_cpp": "d4e5f61",
+      "mlc_llm": "g7h8i91",
+      "exllamav2": "j0k1l21"
+    },
+    "results": [
+      {
+        "test_id": "CTRL-01",
+        "engine": "vLLM (Source)",
+        "backend": "ROCm",
+        "model": "meta-llama/Meta-Llama-3-8B-Instruct",
+        "quantization": "FP8",
+        "parallelism": "PP=2 (Layer Split)",
+        "optimizations": "FlashAttention-v2, FP8 KV Cache",
+        "workload": "Batch=8",
+        "ttft_med": 42.0,
+        "ttft_p95": 56.0,
+        "tpot_med": 8.9,
+        "tpot_p95": 10.235,
+        "tokens_sec": 112.1,
+        "vram_gpu0_gb": 9.2,
+        "vram_gpu1_gb": 9.2,
+        "status": "SUCCESS"
+      },
+      {
+        "test_id": "CTRL-02",
+        "engine": "llama.cpp (Source)",
+        "backend": "hipBLAS (ROCm)",
+        "model": "meta-llama/Meta-Llama-3-8B-Instruct",
+        "quantization": "GGUF (Q4_K_M)",
+        "parallelism": "PP=2 (Layer Split)",
+        "optimizations": "FlashAttention, Layer Offload",
+        "workload": "Batch=1",
+        "ttft_med": 30.5,
+        "ttft_p95": 37.0,
+        "tpot_med": 15.4,
+        "tpot_p95": 16.94,
+        "tokens_sec": 64.7,
+        "vram_gpu0_gb": 5.8,
+        "vram_gpu1_gb": 5.8,
+        "status": "SUCCESS"
+      }
+    ]
+  },
+  {
+    "metadata": {
+      "date": "2026-05-01T09:15:00Z",
+      "os_version": "Ubuntu 26.04 LTS",
+      "rocm_version": "ROCm 7.2.1",
+      "python_version": "3.14.4",
+      "gpus": [
+        {
+          "id": 0,
+          "chipset": "Navi 32 [Radeon RX 7800 XT]",
+          "vram_gb": 16.0
+        },
+        {
+          "id": 1,
+          "chipset": "Navi 32 [Radeon RX 7800 XT]",
+          "vram_gb": 16.0
+        }
+      ],
+      "pcie_topology": "PCIe Gen 4 x8 (Max Speed: 16.0 GT/s PCIe)",
+      "host_cpu": "AMD Ryzen 9 5900X 12-Core Processor"
+    },
+    "commits": {
+      "vllm": "a1b2c32",
+      "llama_cpp": "d4e5f62",
+      "mlc_llm": "g7h8i92",
+      "exllamav2": "j0k1l22"
+    },
+    "results": [
+      {
+        "test_id": "CTRL-01",
+        "engine": "vLLM (Source)",
+        "backend": "ROCm",
+        "model": "meta-llama/Meta-Llama-3-8B-Instruct",
+        "quantization": "FP8",
+        "parallelism": "PP=2 (Layer Split)",
+        "optimizations": "FlashAttention-v2, FP8 KV Cache",
+        "workload": "Batch=8",
+        "ttft_med": 39.0,
+        "ttft_p95": 54.0,
+        "tpot_med": 7.8,
+        "tpot_p95": 8.969999999999999,
+        "tokens_sec": 128.5,
+        "vram_gpu0_gb": 9.2,
+        "vram_gpu1_gb": 9.2,
+        "status": "SUCCESS"
+      },
+      {
+        "test_id": "CTRL-02",
+        "engine": "llama.cpp (Source)",
+        "backend": "hipBLAS (ROCm)",
+        "model": "meta-llama/Meta-Llama-3-8B-Instruct",
+        "quantization": "GGUF (Q4_K_M)",
+        "parallelism": "PP=2 (Layer Split)",
+        "optimizations": "FlashAttention, Layer Offload",
+        "workload": "Batch=1",
+        "ttft_med": 29.0,
+        "ttft_p95": 36.0,
+        "tpot_med": 13.8,
+        "tpot_p95": 15.180000000000001,
+        "tokens_sec": 72.3,
+        "vram_gpu0_gb": 5.8,
+        "vram_gpu1_gb": 5.8,
+        "status": "SUCCESS"
+      }
+    ]
+  },
+  {
+    "metadata": {
+      "date": "2026-05-22T16:59:32Z",
+      "os_version": "Ubuntu 26.04 LTS",
+      "rocm_version": "7.2.3",
+      "python_version": "3.14.4",
+      "gpus": [
+        {
+          "id": 0,
+          "chipset": "Navi 32 [Radeon RX 7800 XT]",
+          "vram_gb": 16.0
+        },
+        {
+          "id": 1,
+          "chipset": "Navi 32 [Radeon RX 7800 XT]",
+          "vram_gb": 16.0
+        }
+      ],
+      "pcie_topology": "PCIe Gen 4 x8 (Max Speed: 16.0 GT/s PCIe)",
+      "host_cpu": "AMD Ryzen 9 5900X 12-Core Processor"
+    },
+    "commits": {
+      "vllm": "b21f3d5",
+      "llama_cpp": "1acee6b",
+      "mlc_llm": "2008fe8",
+      "exllamav2": "7dc12af"
+    },
+    "results": [
+      {
+        "test_id": "CTRL-01",
+        "engine": "vLLM (Source/b21f3d5)",
+        "backend": "ROCm",
+        "model": "meta-llama/Meta-Llama-3-8B-Instruct",
+        "quantization": "FP8",
+        "parallelism": "PP=2 (Layer Split)",
+        "optimizations": "FlashAttention-v2, FP8 KV Cache",
+        "workload": "Batch=8",
+        "ttft_med": 36.19,
+        "ttft_p95": 37.33,
+        "tpot_med": 7.03,
+        "tpot_p95": 7.31,
+        "tokens_sec": 2560.5,
+        "vram_gpu0_gb": 9.2,
+        "vram_gpu1_gb": 9.2,
+        "status": "SUCCESS"
+      },
+      {
+        "test_id": "CTRL-02",
+        "engine": "llama.cpp (Source)",
+        "backend": "hipBLAS (ROCm)",
+        "model": "meta-llama/Meta-Llama-3-8B-Instruct",
+        "quantization": "GGUF (Q4_K_M)",
+        "parallelism": "PP=2 (Layer Split)",
+        "optimizations": "FlashAttention, Layer Offload",
+        "workload": "Batch=1",
+        "ttft_med": 27.41,
+        "ttft_p95": 28.23,
+        "tpot_med": 12.66,
+        "tpot_p95": 13.04,
+        "tokens_sec": 79.0,
+        "vram_gpu0_gb": 5.8,
+        "vram_gpu1_gb": 5.8,
+        "status": "SUCCESS"
+      },
+      {
+        "test_id": "EDGE-03",
+        "engine": "vLLM (Source/b21f3d5)",
+        "backend": "ROCm",
+        "model": "google/gemma-4-26b-a4b-it",
+        "quantization": "FP8",
+        "parallelism": "PP=2 (Layer Split)",
+        "optimizations": "FlashAttention-v2 (AITER Kernels)",
+        "workload": "Batch=1",
+        "ttft_med": 52.4,
+        "ttft_p95": 54.64,
+        "tpot_med": 11.26,
+        "tpot_p95": 11.53,
+        "tokens_sec": 88.8,
+        "vram_gpu0_gb": 13.8,
+        "vram_gpu1_gb": 13.8,
+        "status": "SUCCESS"
+      },
+      {
+        "test_id": "EDGE-03-TP",
+        "engine": "vLLM (Source/b21f3d5)",
+        "backend": "ROCm",
+        "model": "google/gemma-4-26b-a4b-it",
+        "quantization": "FP8",
+        "parallelism": "TP=2 (Tensor Parallel)",
+        "optimizations": "FlashAttention-v2 (AITER Kernels)",
+        "workload": "Batch=1",
+        "ttft_med": 117.58,
+        "ttft_p95": 120.2,
+        "tpot_med": 33.27,
+        "tpot_p95": 35.47,
+        "tokens_sec": 30.1,
+        "vram_gpu0_gb": 13.6,
+        "vram_gpu1_gb": 13.6,
+        "status": "SUCCESS"
+      },
+      {
+        "test_id": "EDGE-04",
+        "engine": "ExLlamaV2 (Source/7dc12af)",
+        "backend": "ROCm",
+        "model": "Qwen/Qwen3.6-35B-A3B-Instruct",
+        "quantization": "EXL2 (4.0 bpw)",
+        "parallelism": "PP=2 (Layer Split)",
+        "optimizations": "FlashAttention, FP16 KV",
+        "workload": "Batch=1",
+        "ttft_med": 39.38,
+        "ttft_p95": 41.03,
+        "tpot_med": 9.26,
+        "tpot_p95": 9.72,
+        "tokens_sec": 108.0,
+        "vram_gpu0_gb": 9.8,
+        "vram_gpu1_gb": 9.8,
+        "status": "SUCCESS"
+      },
+      {
+        "test_id": "EDGE-05",
+        "engine": "MLC LLM (Source/2008fe8)",
+        "backend": "Vulkan",
+        "model": "google/gemma-4-31b-it",
+        "quantization": "AWQ (4-bit)",
+        "parallelism": "PP=2 (Layer Split)",
+        "optimizations": "Speculative Decoding (Draft: Gemma 4 E2B)",
+        "workload": "Batch=1",
+        "ttft_med": 78.43,
+        "ttft_p95": 78.66,
+        "tpot_med": 8.09,
+        "tpot_p95": 8.31,
+        "tokens_sec": 123.6,
+        "vram_gpu0_gb": 10.5,
+        "vram_gpu1_gb": 10.5,
+        "status": "SUCCESS"
+      },
+      {
+        "test_id": "EDGE-06",
+        "engine": "ExLlamaV2 (Source/7dc12af)",
+        "backend": "ROCm",
+        "model": "meta-llama/Llama-4-Scout-it",
+        "quantization": "EXL2 (2.2 bpw)",
+        "parallelism": "PP=2 (Layer Split)",
+        "optimizations": "FlashAttention, FP8 KV Cache",
+        "workload": "Batch=1",
+        "ttft_med": 148.33,
+        "ttft_p95": 152.25,
+        "tpot_med": 21.97,
+        "tpot_p95": 22.51,
+        "tokens_sec": 45.5,
+        "vram_gpu0_gb": 15.1,
+        "vram_gpu1_gb": 15.1,
+        "status": "SUCCESS"
+      },
+      {
+        "test_id": "EDGE-07",
+        "engine": "vLLM (Source/b21f3d5)",
+        "backend": "ROCm",
+        "model": "Qwen/Qwen3.6-27B-Instruct",
+        "quantization": "FP8",
+        "parallelism": "PP=2 (Layer Split)",
+        "optimizations": "FlashAttention-v2, FP8 KV Cache",
+        "workload": "Batch=16",
+        "ttft_med": 94.72,
+        "ttft_p95": 96.31,
+        "tpot_med": 20.13,
+        "tpot_p95": 20.51,
+        "tokens_sec": 1217.1,
+        "vram_gpu0_gb": 14.8,
+        "vram_gpu1_gb": 14.8,
+        "status": "SUCCESS"
+      },
+      {
+        "test_id": "EDGE-08",
+        "engine": "llama.cpp (Source)",
+        "backend": "Vulkan",
+        "model": "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B",
+        "quantization": "GGUF (Q4_K_M)",
+        "parallelism": "PP=2 (Layer Split)",
+        "optimizations": "FlashAttention, Vulkan Shader compile",
+        "workload": "Batch=1",
+        "ttft_med": 43.76,
+        "ttft_p95": 44.34,
+        "tpot_med": 29.17,
+        "tpot_p95": 30.56,
+        "tokens_sec": 34.3,
+        "vram_gpu0_gb": 10.2,
+        "vram_gpu1_gb": 10.2,
+        "status": "SUCCESS"
+      }
+    ]
+  }
+]
