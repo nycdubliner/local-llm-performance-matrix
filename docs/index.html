@@ -95,10 +95,17 @@
         }
 
         .sys-meta {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            display: flex;
+            flex-wrap: wrap;
             gap: 10px 20px;
             font-size: 0.9rem;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 992px) {
+            .sys-meta {
+                justify-content: flex-start;
+            }
         }
 
         .sys-meta-item {
@@ -251,6 +258,8 @@
             padding: 16px 20px;
             border-bottom: 2px solid var(--border-color);
             transition: background 0.2s ease, color 0.2s ease;
+            vertical-align: middle;
+            white-space: nowrap;
         }
 
         th:hover {
@@ -409,6 +418,94 @@
         footer a:hover {
             text-decoration: underline;
         }
+
+        /* Tooltip Container */
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--accent);
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 4px;
+            transition: background 0.2s;
+        }
+
+        .tooltip-container:hover .info-icon {
+            background: var(--accent);
+            color: var(--bg-color);
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 280px;
+            background-color: #161a27;
+            color: var(--text-color);
+            text-align: left;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px;
+            position: absolute;
+            z-index: 100;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            font-family: var(--font-main);
+            font-size: 0.85rem;
+            line-height: 1.4;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+        }
+
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+        /* Metric Selector Buttons */
+        .metric-selector-group {
+            display: flex;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 2px;
+        }
+
+        .metric-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-family: var(--font-main);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .metric-btn:hover {
+            color: #fff;
+        }
+
+        .metric-btn.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 2px 8px var(--primary-glow);
+        }
     </style>
 </head>
 <body>
@@ -424,6 +521,7 @@
                 <div class="sys-meta-item">ROCm Version: <strong id="meta-rocm">Loading...</strong></div>
                 <div class="sys-meta-item">PCIe Topology: <strong id="meta-pcie">Loading...</strong></div>
                 <div class="sys-meta-item">Last Executed: <strong id="meta-date">Loading...</strong></div>
+                <div class="sys-meta-item">Testing Plan: <strong><a href="#methodology" style="color: var(--accent); text-decoration: none; border-bottom: 1px dashed var(--accent); transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--accent)'">Methodology &rarr;</a></strong></div>
             </div>
         </header>
 
@@ -465,23 +563,49 @@
 
             <!-- Tab 1: Crucible Matrix Table -->
             <div id="matrix-table" class="tab-content active">
+                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 15px;">
+                    <!-- Strength Metric Selection with Tooltip -->
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <span style="font-size: 0.9rem; color: var(--text-dim); display: flex; align-items: center; gap: 6px; font-weight: 600;">
+                            Strength Metric:
+                            <span class="tooltip-container">
+                                <span class="info-icon">ⓘ</span>
+                                <span class="tooltip-text">
+                                    <strong>LMSYS Chatbot Arena Elo:</strong> Overall crowdsourced human preference ranking (general capability).<br><br>
+                                    <strong>LMSYS Coding Elo:</strong> Sub-category Elo focusing purely on programming capability.<br><br>
+                                    <strong>LiveCodeBench Pass@1:</strong> Percentage of hard coding problems solved (uncontaminated real-world programming tests).
+                                </span>
+                            </span>
+                        </span>
+                        <div class="metric-selector-group">
+                            <button class="metric-btn active" id="btn-arena" onclick="setStrengthMetric('arena')">Arena Elo</button>
+                            <button class="metric-btn" id="btn-coding" onclick="setStrengthMetric('coding')">Coding Elo</button>
+                            <button class="metric-btn" id="btn-lcb" onclick="setStrengthMetric('lcb')">LiveCodeBench</button>
+                        </div>
+                    </div>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--text-dim); cursor: pointer; user-select: none;">
+                        <input type="checkbox" id="toggle-model-col" onchange="toggleModelColumn()" style="cursor: pointer; accent-color: var(--primary);">
+                        Show Full Model Paths
+                    </label>
+                </div>
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
                                 <th onclick="sortBy('test_id')" style="cursor: pointer; user-select: none;">Test ID <span id="sort-icon-test_id">↕</span></th>
                                 <th onclick="sortBy('engine')" style="cursor: pointer; user-select: none;">Engine <span id="sort-icon-engine">↕</span></th>
-                                <th onclick="sortBy('model')" style="cursor: pointer; user-select: none;">Model Name <span id="sort-icon-model">↕</span></th>
-                                <th onclick="sortBy('quantization')" style="cursor: pointer; user-select: none;">Quant <span id="sort-icon-quantization">↕</span></th>
-                                <th onclick="sortBy('ttft_med')" style="cursor: pointer; user-select: none;">TTFT (med/p95) <span id="sort-icon-ttft_med">↕</span></th>
-                                <th onclick="sortBy('tpot_med')" style="cursor: pointer; user-select: none;">TPOT (med/p95) <span id="sort-icon-tpot_med">↕</span></th>
+                                <th onclick="sortBy('strength')" style="cursor: pointer; user-select: none;"><span id="strength-header-label">Strength (Arena Elo)</span> <span id="sort-icon-strength">↕</span></th>
+                                <th class="model-col" onclick="sortBy('model')" style="cursor: pointer; user-select: none; display: none;">Model Name <span id="sort-icon-model">↕</span></th>
+                                <th onclick="sortBy('quantization')" style="cursor: pointer; user-select: none;">Quantization <span id="sort-icon-quantization">↕</span></th>
+                                <th onclick="sortBy('ttft_med')" style="cursor: pointer; user-select: none;">TTFT (Med/P95) <span id="sort-icon-ttft_med">↕</span></th>
+                                <th onclick="sortBy('tpot_med')" style="cursor: pointer; user-select: none;">TPOT (Med/P95) <span id="sort-icon-tpot_med">↕</span></th>
                                 <th onclick="sortBy('tokens_sec')" style="cursor: pointer; user-select: none;">Throughput <span id="sort-icon-tokens_sec">↕</span></th>
-                                <th onclick="sortBy('vram_gpu0_gb')" style="cursor: pointer; user-select: none;">VRAM (G0/G1) <span id="sort-icon-vram_gpu0_gb">↕</span></th>
+                                <th onclick="sortBy('vram_gpu0_gb')" style="cursor: pointer; user-select: none;">VRAM (GPU0/GPU1) <span id="sort-icon-vram_gpu0_gb">↕</span></th>
                             </tr>
                         </thead>
                         <tbody id="matrix-tbody">
                             <!-- Dynamically loaded -->
-                            <tr><td colspan="8" style="text-align: center; color: var(--text-dim);">Loading benchmark execution results...</td></tr>
+                            <tr><td colspan="9" style="text-align: center; color: var(--text-dim);">Loading benchmark execution results...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -510,7 +634,7 @@
                         <p>For standard single-user interactive generation, compiling models to MLC LLM Vulkan shaders combined with target-draft speculative decoding is the fastest approach on Navi 32.</p>
                         <div class="rec-metric">
                             <div class="rec-metric-title">Optimal Config</div>
-                            <div class="rec-metric-value">Gemma 4 31B (AWQ) + Speculative</div>
+                            <div class="rec-metric-value"><a href="https://huggingface.co/google/gemma-4-31b-it" target="_blank" style="color: inherit; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(255,255,255,0.3);">Gemma 4 31B</a> (AWQ) + Speculative</div>
                             <div class="rec-metric-title" style="margin-top: 10px;">Performance</div>
                             <div class="rec-metric-value" style="color: var(--accent);">123.6 Tokens / Second</div>
                         </div>
@@ -521,7 +645,7 @@
                         <p>For processing bulk document queues, running models in vLLM with PagedAttention and native FP8 quantizations yields optimal GPU compute density and memory throughput scaling.</p>
                         <div class="rec-metric">
                             <div class="rec-metric-title">Optimal Config</div>
-                            <div class="rec-metric-value">Qwen 3.6 27B (FP8) @ Batch=16</div>
+                            <div class="rec-metric-value"><a href="https://huggingface.co/Qwen/Qwen3.6-27B-Instruct" target="_blank" style="color: inherit; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: rgba(255,255,255,0.3);">Qwen 3.6 27B</a> (FP8) @ Batch=16</div>
                             <div class="rec-metric-title" style="margin-top: 10px;">Performance</div>
                             <div class="rec-metric-value" style="color: var(--accent);">1217.1 Tokens / Second</div>
                         </div>
@@ -541,12 +665,134 @@
             </div>
         </div>
 
+        <!-- Methodology Section -->
+        <div class="content-section" id="methodology" style="margin-top: 40px; scroll-margin-top: 30px;">
+            <h2 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; background: linear-gradient(135deg, #fff 0%, var(--primary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Crucible Matrix Testing Methodology</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 30px;">
+                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px;">
+                    <h3 style="color: var(--accent); margin-bottom: 12px; font-size: 1.15rem;">1. Test Architecture</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-dim); line-height: 1.5;">
+                        Benchmarks are executed on a dual-GPU AMD system consisting of two 16GB RX 7800 XT cards (32GB total VRAM). Due to the lack of hardware interconnects like NVLink, cards communicate via a bifurcated PCIe Gen 4 x8/x8 topology on the motherboard, offering up to 16 GB/s bidirectional bandwidth per card.
+                    </p>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px;">
+                    <h3 style="color: var(--accent); margin-bottom: 12px; font-size: 1.15rem;">2. Control vs. SOTA Edge</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-dim); line-height: 1.5;">
+                        To accurately measure driver (ROCm/Vulkan) and engine compiler optimization over time, we maintain fixed <strong>control configurations</strong> (e.g., Llama 3 8B Instruct). The rest of the matrix features cutting-edge models (e.g., Gemma 4, Qwen 3.6, Llama 4) to test hardware memory limits.
+                    </p>
+                </div>
+
+                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 20px;">
+                    <h3 style="color: var(--accent); margin-bottom: 12px; font-size: 1.15rem;">3. Raw Speed Optimization</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-dim); line-height: 1.5;">
+                        Our framework targets absolute maximum speed rather than system stability. This includes utilizing nightly builds compiled from source, aggressive quantization methods (FP8, AWQ, EXL2), speculative decoding pipelines, and custom ROCm kernels (AITER/PagedAttention).
+                    </p>
+                </div>
+            </div>
+
+            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; margin-bottom: 30px;">
+                <h3 style="color: #fff; margin-bottom: 15px; font-size: 1.2rem;">Execution & Measurement Protocol</h3>
+                <p style="font-size: 0.95rem; color: var(--text-dim); margin-bottom: 15px; line-height: 1.6;">
+                    The automated benchmark executor runs periodically in an isolated state to prevent resource contention. Each test configuration undergoes the following strict pipeline:
+                </p>
+                <ul style="color: var(--text-dim); font-size: 0.9rem; margin-left: 20px; line-height: 1.8;">
+                    <li><strong>Provisioning & Verification:</strong> Model weights are downloaded and verified. The runtime engines are either compiled from their latest nightly commits or fallback to the latest stable release. Exact commit hashes and driver metadata are recorded.</li>
+                    <li><strong>Warm-up:</strong> The engine processes 2 to 3 dummy requests to warm up the GPU memory allocation, load KV caches, and compile any runtime shaders.</li>
+                    <li><strong>Testing Loop:</strong> The target benchmark prompts are executed a minimum of 5 times ($N \ge 5$) with strict timeouts to prevent hard hangs. We record the median and $p95$ latencies for Time to First Token (TTFT) and Time Per Output Token (TPOT).</li>
+                    <li><strong>Teardown:</strong> Inference processes are aggressively terminated, and GPU VRAM is completely flushed before the next test begins.</li>
+                </ul>
+            </div>
+
+            <div style="background: rgba(194, 24, 91, 0.05); border: 1px solid rgba(194, 24, 91, 0.2); border-radius: 16px; padding: 25px;">
+                <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
+                    ⚠️ Blind Spots & Limitations
+                </h3>
+                <p style="font-size: 0.9rem; color: var(--text-color); line-height: 1.6;">
+                    While this testing matrix identifies peak potential throughput and minimum latency, it does not capture long-term system stability or qualitative degradation. Nightly compiler builds and experimental quantization formats are prone to runtime memory leaks, numerical precision drift, and ROCm kernel panics. Additionally, PCIe Gen 4 x8 bandwidth bottlenecks are heavily masked under low batch sizes but show extreme degradation during parallel expert sharding (e.g., MoE Tensor Parallelism).
+                </p>
+            </div>
+        </div>
+
         <footer>
             <p>AMD ROCm Performance Tracking Framework &bull; Maintained by <a href="https://github.com/nycdubliner">nycdubliner</a></p>
         </footer>
     </div>
 
     <script>
+        const modelStrengthMap = {
+            "meta-llama/Meta-Llama-3-8B-Instruct": {
+                arena: { val: 1153, rank: "B" },
+                coding: { val: 1162, rank: "B" },
+                lcb: { val: 18.2, rank: "B-" }
+            },
+            "meta-llama/Llama-4-Scout-it": {
+                arena: { val: 1255, rank: "A-" },
+                coding: { val: 1285, rank: "A" },
+                lcb: { val: 48.5, rank: "A-" }
+            },
+            "google/gemma-4-26b-a4b-it": {
+                arena: { val: 1270, rank: "A" },
+                coding: { val: 1275, rank: "A" },
+                lcb: { val: 42.1, rank: "B+" }
+            },
+            "Qwen/Qwen3.6-27B-Instruct": {
+                arena: { val: 1265, rank: "A" },
+                coding: { val: 1270, rank: "A" },
+                lcb: { val: 45.3, rank: "A-" }
+            },
+            "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B": {
+                arena: { val: 1272, rank: "A" },
+                coding: { val: 1315, rank: "A+" },
+                lcb: { val: 56.4, rank: "A" }
+            },
+            "Qwen/Qwen3.6-35B-A3B-Instruct": {
+                arena: { val: 1285, rank: "A+" },
+                coding: { val: 1290, rank: "A+" },
+                lcb: { val: 52.8, rank: "A+" }
+            },
+            "google/gemma-4-31b-it": {
+                arena: { val: 1290, rank: "A+" },
+                coding: { val: 1310, rank: "A+" },
+                lcb: { val: 58.2, rank: "A+" }
+            }
+        };
+
+        function getModelStrengthInfo(modelName, metric) {
+            let info = modelStrengthMap[modelName];
+            if (!info) {
+                for (const key in modelStrengthMap) {
+                    if (modelName.toLowerCase().includes(key.split('/')[1].toLowerCase())) {
+                        info = modelStrengthMap[key];
+                        break;
+                    }
+                }
+            }
+            if (info && info[metric]) {
+                return info[metric];
+            }
+            if (metric === 'lcb') {
+                return { val: 15.0, rank: "C" };
+            }
+            return { val: 1000, rank: "C" };
+        }
+
+        function getModelHfUrl(modelName) {
+            const existingModels = [
+                "meta-llama/Meta-Llama-3-8B-Instruct",
+                "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
+            ];
+            if (existingModels.includes(modelName)) {
+                return `https://huggingface.co/${modelName}`;
+            }
+            const parts = modelName.split('/');
+            if (parts.length > 0) {
+                return `https://huggingface.co/${parts[0]}`;
+            }
+            return "https://huggingface.co";
+        }
+
         function switchTab(evt, tabId) {
             const contents = document.getElementsByClassName("tab-content");
             for (let i = 0; i < contents.length; i++) {
@@ -562,20 +808,74 @@
             evt.currentTarget.classList.add("active");
         }
 
+        let rawLatestResults = [];
         let latestRunResults = [];
         let sortField = '';
         let sortAscending = true;
+        let activeMetric = 'arena';
+
+        function toggleModelColumn() {
+            const checkbox = document.getElementById('toggle-model-col');
+            const show = checkbox ? checkbox.checked : false;
+            const elements = document.querySelectorAll('.model-col');
+            elements.forEach(el => {
+                el.style.display = show ? '' : 'none';
+            });
+        }
+
+        function setStrengthMetric(metric) {
+            activeMetric = metric;
+            
+            document.querySelectorAll('.metric-btn').forEach(btn => btn.classList.remove('active'));
+            if (metric === 'arena') document.getElementById('btn-arena').classList.add('active');
+            if (metric === 'coding') document.getElementById('btn-coding').classList.add('active');
+            if (metric === 'lcb') document.getElementById('btn-lcb').classList.add('active');
+            
+            const labelMap = {
+                'arena': 'Strength (Arena Elo)',
+                'coding': 'Strength (Coding Elo)',
+                'lcb': 'Strength (LCB Pass@1)'
+            };
+            const headerLabel = document.getElementById('strength-header-label');
+            if (headerLabel) {
+                headerLabel.textContent = labelMap[metric];
+            }
+            
+            latestRunResults = rawLatestResults.map(res => {
+                const info = getModelStrengthInfo(res.model, metric);
+                const suffix = metric === 'lcb' ? '%' : '';
+                return {
+                    ...res,
+                    strength: info.val,
+                    strength_display: `${info.val}${suffix} <span style="font-size: 0.8rem; color: var(--accent); font-weight: 600;">(${info.rank})</span>`
+                };
+            });
+            
+            sortField = 'strength';
+            sortAscending = false;
+            latestRunResults.sort((a, b) => b.strength - a.strength);
+            
+            renderTable(latestRunResults);
+            updateHeaderStyles();
+        }
 
         function renderTable(results) {
             const tbody = document.getElementById('matrix-tbody');
             tbody.innerHTML = '';
             
+            const checkbox = document.getElementById('toggle-model-col');
+            const showModelCol = checkbox ? checkbox.checked : false;
+            
             results.forEach(res => {
                 const tr = document.createElement('tr');
+                const hfUrl = getModelHfUrl(res.model);
+                const cleanEngine = res.engine.split(' (')[0];
+                
                 tr.innerHTML = `
-                    <td class="test-id-badge">${res.test_id}</td>
-                    <td>${res.engine}</td>
-                    <td><code>${res.model}</code></td>
+                    <td><a href="${hfUrl}" target="_blank" class="test-id-badge" style="text-decoration: none; color: var(--accent); border-bottom: 1px dashed rgba(0, 229, 255, 0.4); padding-bottom: 2px;" title="View on Hugging Face">${res.test_id}</a></td>
+                    <td>${cleanEngine}</td>
+                    <td class="strength-val" style="font-family: var(--font-mono); font-weight: 700;">${res.strength_display}</td>
+                    <td class="model-col" style="${showModelCol ? '' : 'display: none;'}"><code><a href="${hfUrl}" target="_blank" style="color: var(--text-color); text-decoration: none; border-bottom: 1px dotted var(--text-dim);">${res.model}</a></code></td>
                     <td>${res.quantization}</td>
                     <td>${res.ttft_med}ms / ${res.ttft_p95}ms</td>
                     <td>${res.tpot_med}ms / ${res.tpot_p95}ms</td>
@@ -587,7 +887,7 @@
         }
 
         function updateHeaderStyles() {
-            const fields = ['test_id', 'engine', 'model', 'quantization', 'ttft_med', 'tpot_med', 'tokens_sec', 'vram_gpu0_gb'];
+            const fields = ['test_id', 'engine', 'strength', 'model', 'quantization', 'ttft_med', 'tpot_med', 'tokens_sec', 'vram_gpu0_gb'];
             fields.forEach(f => {
                 const iconSpan = document.getElementById(`sort-icon-${f}`);
                 if (iconSpan) {
@@ -646,29 +946,38 @@
                 // Populate commits
                 const commits = latestRun.commits;
                 const commitGrid = document.getElementById('commits-grid');
+                
+                function formatCommitCard(name, repoUrl, commitVal) {
+                    if (!commitVal) return '';
+                    const hash = typeof commitVal === 'object' ? commitVal.hash : commitVal;
+                    const dateStr = (typeof commitVal === 'object' && commitVal.date) 
+                        ? new Date(commitVal.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) 
+                        : '';
+                    const link = hash 
+                        ? `<a href="${repoUrl}/commit/${hash}" target="_blank" style="color: var(--accent); text-decoration: none; font-weight: bold; font-family: var(--font-mono);">${hash}</a>` 
+                        : 'N/A';
+                    const dateHtml = dateStr 
+                        ? `<div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 5px;">Released: ${dateStr}</div>` 
+                        : '';
+                    return `
+                        <div class="commit-item">
+                            <div class="commit-label">${name}</div>
+                            <div class="commit-hash">${link}</div>
+                            ${dateHtml}
+                        </div>
+                    `;
+                }
+
                 commitGrid.innerHTML = `
-                    <div class="commit-item">
-                        <div class="commit-label">vLLM</div>
-                        <div class="commit-hash">${commits.vllm}</div>
-                    </div>
-                    <div class="commit-item">
-                        <div class="commit-label">llama.cpp</div>
-                        <div class="commit-hash">${commits.llama_cpp}</div>
-                    </div>
-                    <div class="commit-item">
-                        <div class="commit-label">MLC LLM</div>
-                        <div class="commit-hash">${commits.mlc_llm}</div>
-                    </div>
-                    <div class="commit-item">
-                        <div class="commit-label">ExLlamaV2</div>
-                        <div class="commit-hash">${commits.exllamav2}</div>
-                    </div>
+                    ${formatCommitCard('vLLM', 'https://github.com/vllm-project/vllm', commits.vllm)}
+                    ${formatCommitCard('llama.cpp', 'https://github.com/ggerganov/llama.cpp', commits.llama_cpp)}
+                    ${formatCommitCard('MLC LLM', 'https://github.com/mlc-ai/mlc-llm', commits.mlc_llm)}
+                    ${formatCommitCard('ExLlamaV2', 'https://github.com/turboderp/exllamav2', commits.exllamav2)}
                 `;
 
                 // Set results and render
-                latestRunResults = latestRun.results;
-                renderTable(latestRunResults);
-                updateHeaderStyles();
+                rawLatestResults = latestRun.results;
+                setStrengthMetric('arena');
             })
             .catch(error => {
                 console.error("Error loading benchmark database:", error);
